@@ -77,13 +77,7 @@
                 <!-- <td>{{user.rate}}</td> -->
 
 
-                <template v-if="user.rep">
-                    <td v-html="user.rep.profileavatar"></td>
-                    <td :data-member-since="user.rep.membersince" :data-value="user.rep.membersince">{{user.rep.membersince}}</td>
-                    <td :data-steam-level="user.rep.steamlevel" :data-value="user.rep.steamlevel" :data-false="!user.rep.steamlevel">{{user.rep.steamlevel}}</td>
-                    <!-- <td :data-privacy-state="user.rep.privacystate" :data-value="user.rep.privacystate">{{user.rep.privacystate}}</td> -->
-                </template>
-                <template v-else-if="user.summarie">
+                <template v-if="user.summarie">
                     <td style="overflow: hidden;">
                         <img :src="user.summarie.avatarmedium">
                     </td>
