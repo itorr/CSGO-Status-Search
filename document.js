@@ -96,32 +96,32 @@ const proxyHTML = (uri,callback)=>{
 const deepCopy = o=>JSON.parse(JSON.stringify(o));
 
 
-const text = `Connected to =[A:1:1314370570:19971]:0
-hostname: Valve CS:GO Hong Kong Server (srcds2009-hkg1.142.19)
+const text = `Connected to =[A:1:3561541640:19979]:0
+hostname: Valve CS:GO Hong Kong Server (srcds2055-hkg1.142.42)
 version : 1.38.2.4 secure
 os : Linux
 type : official dedicated
-map : dz_blacksite
+map : dz_sirocco
 players : 17 humans, 0 bots (16/17 max) (not hibernating)
 
 # userid name uniqueid connected ping loss state rate
-# 3 2 "CrayZ" STEAM_1:1:518125952 01:16 42 0 active 196608
-# 4 3 "✈乱了夏末蓝了海 ✡" STEAM_1:0:576810884 01:15 13184 81 spawning 196608
-# 5 4 "KAI_YANG" STEAM_1:1:30355188 01:15 74 0 active 327680
-# 6 5 "Floth" STEAM_1:0:33001152 01:15 164 0 active 196608
-# 7 6 "Little Monkey" STEAM_1:0:523392319 01:15 106 0 active 196608
-# 8 7 "CurseRed" STEAM_1:0:55968383 01:15 72 0 active 786432
-# 9 8 "Parsifal" STEAM_1:0:2523045 01:15 162 0 active 786432
-# 10 9 "蒙面叔叔" STEAM_1:0:33258646 01:15 179 0 active 786432
-# 11 10 "chenf1912" STEAM_1:0:417569018 01:15 95 0 active 786432
-# 12 11 "不2不叫周淑怡" STEAM_1:0:530971387 01:15 80 0 active 196608
-# 13 12 "Orange" STEAM_1:1:207139600 01:15 108 0 active 196608
-# 14 13 "NOOB" STEAM_1:0:537625663 01:15 76 0 active 196608
-# 15 14 "Ben丶" STEAM_1:1:635986018 01:15 122 0 active 196608
-# 16 15 "Txlcgx" STEAM_1:0:533188657 01:15 105 0 active 786432
-# 17 16 "SuperSuB!" STEAM_1:0:162908932 01:13 88 0 active 196608
-# 18 17 "ghosterhk" STEAM_1:1:522784576 01:13 32 0 active 196608
-# 19 18 "莳余" STEAM_1:1:495596568 01:10 124 0 active 196608
+# 3 2 "人老又菜又爱玩" STEAM_1:0:448183897 00:20 39 0 active 196608
+# 4 3 "十二楼五城" STEAM_1:0:572920645 00:20 83 0 active 196608
+# 5 4 "Giang" STEAM_1:0:549226724 00:20 55 0 active 196608
+# 6 5 "狙神阿鑫." STEAM_1:0:503590605 00:20 93 66 spawning 196608
+# 7 6 "lishuvai酷哦" STEAM_1:1:514931287 00:20 141 73 spawning 196608
+# 8 7 "at88" STEAM_1:0:540928738 00:20 101 0 active 786432
+# 9 8 "CurseRed" STEAM_1:0:55968383 00:20 74 0 active 786432
+# 10 9 "一生一世永爱UMP45" STEAM_1:0:436743442 00:20 63 56 spawning 786432
+# 11 10 "Orange" STEAM_1:1:207139600 00:20 104 0 active 196608
+# 12 11 "Star Fox" STEAM_1:1:96579395 00:20 77 56 spawning 131072
+# 13 12 "xi the pooh" STEAM_1:1:128895246 00:20 88 0 active 786432
+# 14 13 "like" STEAM_1:1:631677446 00:20 83 0 active 196608
+# 15 14 "DarkwinG" STEAM_1:0:526223612 00:20 124 66 spawning 196608
+# 16 15 "Heracles" STEAM_1:1:449076373 00:20 398 86 spawning 196608
+# 17 16 "我菜别说我" STEAM_1:1:622464804 00:20 77 56 spawning 196608
+# 18 17 "Stranger" STEAM_1:0:171506710 00:17 121 66 spawning 786432
+# 19 18 "坠入虚空飞向你" STEAM_1:0:644594952 00:14 237 72 spawning 196608
 #end`;
 
 const logNameRegex = /^\w+$/;
@@ -250,8 +250,8 @@ const GetRecentlyPlayed = (id64,callback)=>{
 const getLevel = (id64,callback)=>{
 	proxy(`https://api.steampowered.com/IPlayerService/GetSteamLevel/v1/?key=${key}&steamid=${id64}`,r=>{
 		try{
-			if(!r.response.player_level){
-				console.log(id64,/GetSteamLevel/,null)
+			if(r.response.player_level === undefined){
+				console.log(id64,/GetSteamLevel/,r,`https://api.steampowered.com/IPlayerService/GetSteamLevel/v1/?key=${key}&steamid=${id64}`)
 				return;
 			}
 			callback(r.response.player_level)
@@ -284,7 +284,16 @@ const app = new Vue({
 	data,
 	methods:{
 		refactor(){
+			if(!this.text){
+				this.info = null;
+				return;
+			}
 			let lines = this.text.split(/\n/g);
+
+			if(!lines.length){
+				this.info = null;
+				return;
+			}
 
 			// console.log(lines)
 			const info = {
@@ -357,15 +366,6 @@ const app = new Vue({
 						// 	})
 						// })
 
-						GetRecentlyPlayed(id64,r=>{
-							if(!r) return;
-							app.$set(user,'playtime_2weeks',r.playtime_2weeks);
-							app.$set(user,'playtime_forever',r.playtime_forever);
-						})
-
-						getLevel(id64,level=>{
-							app.$set(user,'level',level);
-						})
 					}
 					return
 				}
@@ -384,27 +384,41 @@ const app = new Vue({
 				}
 			})
 
-
-			proxy(`https://api.steampowered.com/ISteamUser/GetPlayerBans/v1/?key=${key}&steamids=${id64s.join(',')}`,r=>{
-				// console.log(r)
-				r.players.forEach(bans=>{
-					// console.log(bans.SteamId,Users[bans.SteamId])
-					if(Users[bans.SteamId]){
-						app.$set(Users[bans.SteamId],'bans',bans)
-					}
+			if(id64s.length){
+				proxy(`https://api.steampowered.com/ISteamUser/GetPlayerBans/v1/?key=${key}&steamids=${id64s.join(',')}`,r=>{
+					// console.log(r)
+					r.players.forEach(bans=>{
+						// console.log(bans.SteamId,Users[bans.SteamId])
+						if(Users[bans.SteamId]){
+							app.$set(Users[bans.SteamId],'bans',bans)
+						}
+					})
 				})
-			})
+	
+				proxy(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${key}&steamids=${id64s.join(',')}`,r=>{
+					r.response.players.forEach(summarie=>{
+						const id64 = summarie.steamid;
+						const user = Users[id64];
+						if(user){
+							app.$set(user,'summarie',summarie)
+							app.$set(user,'avatar',summarie.avatarmedium)
+							app.$set(user,'timecreated',summarie.timecreated||null)
 
-			proxy(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${key}&steamids=${id64s.join(',')}`,r=>{
-				r.response.players.forEach(summarie=>{
-					if(Users[summarie.steamid]){
-						app.$set(Users[summarie.steamid],'summarie',summarie)
-						app.$set(Users[summarie.steamid],'avatar',summarie.avatarmedium)
-						app.$set(Users[summarie.steamid],'timecreated',summarie.timecreated)
-					}
+							if(summarie.timecreated){
+								GetRecentlyPlayed(id64,r=>{
+									if(!r) return;
+									app.$set(user,'playtime_2weeks',r.playtime_2weeks);
+									app.$set(user,'playtime_forever',r.playtime_forever);
+								})
+		
+								getLevel(id64,level=>{
+									app.$set(user,'level',level);
+								})
+							}
+						}
+					})
 				})
-			})
-			
+			}
 
 			this.info = info
 		},
@@ -412,6 +426,10 @@ const app = new Vue({
 			this.sortKey = key
 			this.sortType = type
 		},
+		clear(){
+			localStorage.clear()
+			location.reload()
+		}
 	},
 	watch:{
 		text(){
@@ -464,11 +482,6 @@ app.refactor();
 getLog();
 
 
-const loadScript = (src,el) =>{
-	el = document.createElement('script');
-	el.src = src;
-	document.body.appendChild(el);
-};
 
 window._hmt = [];
 window.dataLayer = [

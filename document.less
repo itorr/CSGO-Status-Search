@@ -278,10 +278,34 @@ time{
 	}
 }
 
+
+
+.sort-th{
+	cursor: pointer;
+	user-select: none;
+	&.active{
+		background:#DDD;
+	}
+}
+
+
+.log-buttons-box{
+	margin:-8px;
+	overflow:hidden;
+	background:#FFF;
+	width:76px;
+	height:62px;
+	a{
+		float: left;
+		width: 50%;
+		padding:8px 0;
+		line-height: 16px;
+		text-align: center;
+	}
+}
+
+
 .ui-line-button{
-	float: left;
-	padding:8px 12px;
-	line-height: 16px;
 	background: #F4F4F4;
 	cursor: pointer;
 	&.red{
@@ -297,13 +321,4 @@ time{
 		color:orange;
 	}
 	
-}
-
-
-.sort-th{
-	cursor: pointer;
-	user-select: none;
-	&.active{
-		background:#DDD;
-	}
 }

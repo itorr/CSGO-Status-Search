@@ -5,23 +5,36 @@
 <meta name="viewport" content="width=device-width,user-scalable=0">
 
 
-<link rel="stylesheet" href="document.css?9">
+<!-- <link rel="stylesheet" href="document.css?10"> -->
+<script>
 
-<!-- 
-<link rel="stylesheet/less" href="document.less">
-<script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.11.1/less.min.js"></script> -->
+const headEl = document.querySelector('head');
+    const loadScript = (src,el) =>{
+        el = document.createElement('script');
+        el.src = src;
+        headEl.appendChild(el);
+    };
 
+    const uuid = localStorage['uuid'] || +new Date()
+
+
+    if(location.hostname === 'lab.magiconch.com'){
+        document.write(`<link rel="stylesheet" href="document.css?r=${uuid}" />`)
+    }else{
+        document.write(`<link rel="stylesheet/less" href="document.less" />`)
+        loadScript('//cdnjs.cloudflare.com/ajax/libs/less.js/3.11.1/less.min.js');
+    }
+</script>
 
 <div class="app" :data-runing="runing">
     <header>
         <h1>对局用户信息速览 - CSGO Status Search</h1>
     </header>
-    <textarea v-model.lazy.trim="text" cols="90" rows="30"></textarea>
+    <textarea v-model.lazy.trim="text" cols="90" rows="30" placeholder="输入 CSGO status 信息，快速查询对局用户信息"></textarea>
     <!-- <button @click="refactor">refactor</button> -->
     <!-- <input type="range" v-model.number="h" min="1" max="20" step="0.1"> {{h}} -->
 
     <div class="info-box" v-if="info" v-cloak>
-            
         <table class="ui-table-box users-box">
             <tr>
                 <th class="sort-th" 
@@ -96,12 +109,14 @@
                 <td style="overflow: hidden;">
                     <img :src="user.avatar">
                 </td>
+
                 <td>
                     <span v-if="user.timecreated">
                         <time>{{dateFormat(user.timecreated)}}</time>
                         <br>
                         <small><time>{{dateFormat(user.timecreated,'hh:mm')}}</time></small>
                     </span>
+                    <span v-else-if="user.timecreated === undefined"></span>
                     <span v-else class="ui-tag red nowarp">
                         资料未公开
                     </span>
@@ -109,12 +124,12 @@
 
                 <td>
                     <span class="ui-tag nowarp" 
-                        v-if="user.level && user.level < 5" 
+                        v-if="user.level !== undefined && user.level < 5" 
                         :style="{background:`hsl(${user.level*h},${100 - user.level}%,${60 - user.level/3}%)`,color:'#FFF'}">
                         <small>Lv</small><b>{{user.level}}</b>
                     </span>
                     <span class="ui-tag nowarp" 
-                        v-else-if="user.level" >
+                        v-else-if="user.level !== undefined" >
                         <small>Lv</small><b>{{user.level}}</b>
                     </span>
                 </td>
@@ -154,30 +169,39 @@
                 </td>
 
                 <td>
-                    <div style="margin:-8px;overflow: hidden;background:#FFF;width:76px;height:62px;">
+                    <div class="log-buttons-box">
                         <a class="ui-line-button red" @click="log(user.id64,'red')">红</a>
                         <a class="ui-line-button green" @click="log(user.id64,'green')">绿</a>
-                        <br>
                         <a class="ui-line-button" @click="log(user.id64,null)">无</a>
                         <a class="ui-line-button orange" @click="log(user.id64,'orange')">黄</a>
                     </div>
                 </td>
                 <td>
-                    <a v-if="user.id64" :href="`https://steamcommunity.com/profiles/${user.id64}`" target="_blank">社区</a>
-                    <br>
-                    <a v-if="user.id64" :href="`https://steamrep.com/search?q=${user.id64}`" target="_blank">rep</a>
+                    <div v-if="user.id64" style="margin:-4px 0">
+                        <a :href="`https://steamcommunity.com/profiles/${user.id64}`" target="_blank">社区</a>
+                        <br>
+                        <a :href="`https://steamrep.com/search?q=${user.id64}`" target="_blank">rep</a>
+                        <br>
+                        <a :href="`https://csgostats.gg/player/${user.id64}`" target="_blank">gg</a>
+                    </div>
                 </td>
             </tr>
         </table>
     </div>
     <!-- <pre>{{JSON.stringify($data,0,4)}}</pre> -->
     <div class="post-box">
-        <h3>作弊者记录库</h3>
+        <h3>标记库</h3>
         <p>独立的记录库名称，可以自己起名新建共享给其他人</p>
         <input class="ui-input" v-model.lazy.trim="logName" placeholder="记录库名称"> [a-Z0-9_] 英文数字下划线
+    </div>
+    <div class="post-box">
+        <button @click="clear()">清空全部缓存</button>
     </div>
 </div>
 
 <script src="https://cdn.bootcss.com/vue/2.6.11/vue.min.js"></script>
 <script src="md5.min.js"></script>
-<script src="document.js?6"></script>
+<script>
+
+    loadScript(`document.js?r=${uuid}`);
+</script>
