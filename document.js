@@ -422,9 +422,13 @@ const app = new Vue({
 
 			this.info = info
 		},
-		sortBy(key,type = 1){
+		sortBy(key){
+			if(key !== this.sortKey){
+				this.sortType = 1
+			}else{
+				this.sortType = -this.sortType
+			}
 			this.sortKey = key
-			this.sortType = type
 		},
 		clear(){
 			localStorage.clear()
@@ -457,9 +461,11 @@ const app = new Vue({
 
 			if(keyType === 'number'){
 				return this.info.users.sort((a,b)=>{
-					const aString = Number(a[key])||0;
-					const bString = Number(b[key])||0;
-					return (aString - bString) * type;
+					let _a = a[key];
+					let _b = b[key];
+					if(_a === undefined)_a = -1
+					if(_b === undefined)_b = -1
+					return (_a - _b) * type;
 				});
 			}
 
