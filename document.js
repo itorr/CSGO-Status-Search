@@ -135,6 +135,7 @@ const data = {
 	h:12,
 	Logs:{},
 	sortKey:null,
+	sortType:1,
 	logName
 };
 
@@ -260,6 +261,24 @@ const getLevel = (id64,callback)=>{
 		}
 	})
 }
+
+const SortKeyTypes = {
+	userId:'number',
+	id:'number',
+	level:'number',
+	ping:'number',
+	playtime_2weeks:'number',
+	timecreated:'number',
+	name:'string',
+	logUnix(a,b,type){
+		if(!app.Logs[a.id64]) return 1;
+		if(!app.Logs[b.id64]) return -1;
+
+		const _a = app.Logs[a.id64].unix
+		const _b = app.Logs[b.id64].unix
+		return (_a - _b) * type
+	}
+}
 const app = new Vue({
 	el:'.app',
 	data,
@@ -380,6 +399,8 @@ const app = new Vue({
 				r.response.players.forEach(summarie=>{
 					if(Users[summarie.steamid]){
 						app.$set(Users[summarie.steamid],'summarie',summarie)
+						app.$set(Users[summarie.steamid],'avatar',summarie.avatarmedium)
+						app.$set(Users[summarie.steamid],'timecreated',summarie.timecreated)
 					}
 				})
 			})
@@ -387,8 +408,9 @@ const app = new Vue({
 
 			this.info = info
 		},
-		sortBy(key,type){
+		sortBy(key,type = 1){
 			this.sortKey = key
+			this.sortType = type
 		},
 	},
 	watch:{
@@ -406,12 +428,27 @@ const app = new Vue({
 			if(!this.info.users) return [];
 
 			let key = this.sortKey;
+			let type = this.sortType;
 			if(!key) return this.info.users;
+
+			let keyType = SortKeyTypes[key]||String;
+
+			if(keyType instanceof Function){
+				return this.info.users.sort((a,b)=>keyType(a,b,type));
+			}
+
+			if(keyType === 'number'){
+				return this.info.users.sort((a,b)=>{
+					const aString = Number(a[key])||0;
+					const bString = Number(b[key])||0;
+					return (aString - bString) * type;
+				});
+			}
 
 			return this.info.users.sort((a,b)=>{
 				const aString = String(a[key]);
 				const bString = String(b[key]);
-				return aString.localeCompare(bString)
+				return aString.localeCompare(bString) * type;
 			})
 		}
 	}

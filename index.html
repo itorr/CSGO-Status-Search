@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width,user-scalable=0">
 
 
-<!-- <link rel="stylesheet" href="document.css?7"> -->
+<link rel="stylesheet" href="document.css?9">
 
-
+<!-- 
 <link rel="stylesheet/less" href="document.less">
-<script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.11.1/less.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.11.1/less.min.js"></script> -->
 
 
 <div class="app" :data-runing="runing">
@@ -24,10 +24,18 @@
             
         <table class="ui-table-box users-box">
             <tr>
-                <th style="width:1em">u</th>
-                <th style="width:1em">id</th>
-                <th @click="sortBy('ping',1)">ping<br>loss</th>
-                <th>
+                <th class="sort-th" 
+                    :class="{active:sortKey === 'userId'}" 
+                    @click.prevent="sortBy('userId',-sortType)" style="width:1em">u</th>
+                <th class="sort-th" 
+                    :class="{active:sortKey === 'id'}" 
+                    @click.prevent="sortBy('id',-sortType)" style="width:1em">id</th>
+                <th class="sort-th" 
+                    :class="{active:sortKey === 'level'}" 
+                    @click.prevent="sortBy('ping',-sortType)">ping<br>loss</th>
+                <th class="sort-th" 
+                    :class="{active:sortKey === 'name'}" 
+                    @click.prevent="sortBy('name',-sortType)">
                     name
                     <br>
                     id32 / id64
@@ -37,23 +45,31 @@
                 <!-- <th title="rate">包速率</th> -->
                 
                 <th style="width:44px">头像</th>
-                <th style="width:82px" @click="sortBy('summarie.timecreated',1)">
+                <th style="width:82px" class="sort-th" 
+                    :class="{active:sortKey === 'timecreated'}" 
+                    @click.prevent="sortBy('timecreated',-sortType)">
                     Steam
                     <br>
                     注册时间
                 </th>
-                <th style="width:38px" @click="sortBy('level',1)">
+                <th style="width:38px" class="sort-th" 
+                    :class="{active:sortKey === 'level'}" 
+                    @click.prevent="sortBy('level',-sortType)">
                     社区
                     <br>  
                     等级
                 </th>
-                <th style="width:46px" @click="sortBy('playtime_2weeks',1)">2周<br>总时</th>
+                <th style="width:46px" class="sort-th" 
+                    :class="{active:sortKey === 'playtime_2weeks'}" 
+                    @click.prevent="sortBy('playtime_2weeks',-sortType)">2周<br>总时</th>
                 <!-- <th>资料</th> -->
 
                 <th>封禁</th>
 
 
-                <th style="width:86px">标记时间</th>
+                <th style="width:86px" class="sort-th" 
+                :class="{active:sortKey === 'logUnix'}" 
+                @click.prevent="sortBy('logUnix',-sortType)">标记时间</th>
                 <th style="width:60px">标记</th>
                 <th style="width:36px"></th>
             </tr>
@@ -77,39 +93,32 @@
                 <!-- <td>{{user.rate}}</td> -->
 
 
-                <template v-if="user.summarie">
-                    <td style="overflow: hidden;">
-                        <img :src="user.summarie.avatarmedium">
-                    </td>
-                    <td>
-                        <span v-if="user.summarie.timecreated">
-                            <time>{{dateFormat(user.summarie.timecreated)}}</time>
-                            <br>
-                            <small><time>{{dateFormat(user.summarie.timecreated,'hh:mm')}}</time></small>
-                        </span>
-                        <span v-else class="ui-tag red nowarp">
-                            资料未公开
-                        </span>
-                    </td>
-                    <td>
-                        <span class="ui-tag nowarp" 
-                            v-if="user.level && user.level < 5" 
-                            :style="{background:`hsl(${user.level*h},${100 - user.level}%,${60 - user.level/3}%)`,color:'#FFF'}">
-                            <small>Lv</small><b>{{user.level}}</b>
-                        </span>
-                        <span class="ui-tag nowarp" 
-                            v-else-if="user.level" >
-                            <small>Lv</small><b>{{user.level}}</b>
-                        </span>
-                    </td>
-                    <!-- <td>{{user.rep.privacystate}}</td> -->
-                </template>
-                <template v-else>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </template>
+                <td style="overflow: hidden;">
+                    <img :src="user.avatar">
+                </td>
+                <td>
+                    <span v-if="user.timecreated">
+                        <time>{{dateFormat(user.timecreated)}}</time>
+                        <br>
+                        <small><time>{{dateFormat(user.timecreated,'hh:mm')}}</time></small>
+                    </span>
+                    <span v-else class="ui-tag red nowarp">
+                        资料未公开
+                    </span>
+                </td>
 
+                <td>
+                    <span class="ui-tag nowarp" 
+                        v-if="user.level && user.level < 5" 
+                        :style="{background:`hsl(${user.level*h},${100 - user.level}%,${60 - user.level/3}%)`,color:'#FFF'}">
+                        <small>Lv</small><b>{{user.level}}</b>
+                    </span>
+                    <span class="ui-tag nowarp" 
+                        v-else-if="user.level" >
+                        <small>Lv</small><b>{{user.level}}</b>
+                    </span>
+                </td>
+                <!-- <td>{{user.rep.privacystate}}</td> -->
 
                 <td>
                     <span v-if="user.playtime_2weeks && user.playtime_forever">
@@ -161,7 +170,7 @@
             </tr>
         </table>
     </div>
-    <pre>{{JSON.stringify($data,0,4)}}</pre>
+    <!-- <pre>{{JSON.stringify($data,0,4)}}</pre> -->
     <div class="post-box">
         <h3>作弊者记录库</h3>
         <p>独立的记录库名称，可以自己起名新建共享给其他人</p>
@@ -171,4 +180,4 @@
 
 <script src="https://cdn.bootcss.com/vue/2.6.11/vue.min.js"></script>
 <script src="md5.min.js"></script>
-<script src="document.js?3"></script>
+<script src="document.js?6"></script>
