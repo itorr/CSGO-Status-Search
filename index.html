@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>对局用户信息速览 - CSGO Status Search - 神奇海螺实验室</title>
+
+<meta name="viewport" content="width=device-width,user-scalable=0">
+
+
+<!-- <link rel="stylesheet" href="document.css?7"> -->
+
+
+<link rel="stylesheet/less" href="document.less">
+<script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.11.1/less.min.js"></script>
+
+
+<div class="app" :data-runing="runing">
+    <header>
+        <h1>对局用户信息速览 - CSGO Status Search</h1>
+    </header>
+    <textarea v-model.lazy.trim="text" cols="90" rows="30"></textarea>
+    <!-- <button @click="refactor">refactor</button> -->
+    <!-- <input type="range" v-model.number="h" min="1" max="20" step="0.1"> {{h}} -->
+
+    <div class="info-box" v-if="info" v-cloak>
+            
+        <table class="ui-table-box users-box">
+            <tr>
+                <th style="width:1em">u</th>
+                <th style="width:1em">id</th>
+                <th @click="sortBy('ping',1)">ping<br>loss</th>
+                <th>
+                    name
+                    <br>
+                    id32 / id64
+                </th>
+                <!-- <th>state</th> -->
+                <!-- <th>连接</th> -->
+                <!-- <th title="rate">包速率</th> -->
+                
+                <th style="width:44px">头像</th>
+                <th style="width:82px" @click="sortBy('summarie.timecreated',1)">
+                    Steam
+                    <br>
+                    注册时间
+                </th>
+                <th style="width:38px" @click="sortBy('level',1)">
+                    社区
+                    <br>  
+                    等级
+                </th>
+                <th style="width:46px" @click="sortBy('playtime_2weeks',1)">2周<br>总时</th>
+                <!-- <th>资料</th> -->
+
+                <th>封禁</th>
+
+
+                <th style="width:86px">标记时间</th>
+                <th style="width:60px">标记</th>
+                <th style="width:36px"></th>
+            </tr>
+            <tr v-for="user in users" 
+                :data-bot="user.bot" 
+                :data-log="Logs[user.id64]&&Logs[user.id64].color">
+                <td>{{user.userId}}</td>
+                <td>{{user.id}}</td>
+                <td>
+                    <span>{{user.ping}}</span>
+                    <small v-if="!!+user.loss" data-red style="display: block;">{{user.loss}}</small>
+                </td>
+                <td>
+                    <h4>{{user.name}}</h4>
+                    <small style="display: block;">{{user.id32}}</small>
+                    <small style="display: block;">{{user.id64}}</small>
+                    <small style="display: block;" v-if="user.bot">BOT</small>
+                </td>
+                <!-- <td>{{user.state}}</td> -->
+                <!-- <td>{{user.connected}}</td> -->
+                <!-- <td>{{user.rate}}</td> -->
+
+
+                <template v-if="user.rep">
+                    <td v-html="user.rep.profileavatar"></td>
+                    <td :data-member-since="user.rep.membersince" :data-value="user.rep.membersince">{{user.rep.membersince}}</td>
+                    <td :data-steam-level="user.rep.steamlevel" :data-value="user.rep.steamlevel" :data-false="!user.rep.steamlevel">{{user.rep.steamlevel}}</td>
+                    <!-- <td :data-privacy-state="user.rep.privacystate" :data-value="user.rep.privacystate">{{user.rep.privacystate}}</td> -->
+                </template>
+                <template v-else-if="user.summarie">
+                    <td style="overflow: hidden;">
+                        <img :src="user.summarie.avatarmedium">
+                    </td>
+                    <td>
+                        <span v-if="user.summarie.timecreated">
+                            <time>{{dateFormat(user.summarie.timecreated)}}</time>
+                            <br>
+                            <small><time>{{dateFormat(user.summarie.timecreated,'hh:mm')}}</time></small>
+                        </span>
+                        <span v-else class="ui-tag red nowarp">
+                            资料未公开
+                        </span>
+                    </td>
+                    <td>
+                        <span class="ui-tag nowarp" 
+                            v-if="user.level && user.level < 5" 
+                            :style="{background:`hsl(${user.level*h},${100 - user.level}%,${60 - user.level/3}%)`,color:'#FFF'}">
+                            <small>Lv</small><b>{{user.level}}</b>
+                        </span>
+                        <span class="ui-tag nowarp" 
+                            v-else-if="user.level" >
+                            <small>Lv</small><b>{{user.level}}</b>
+                        </span>
+                    </td>
+                    <!-- <td>{{user.rep.privacystate}}</td> -->
+                </template>
+                <template v-else>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </template>
+
+
+                <td>
+                    <span v-if="user.playtime_2weeks && user.playtime_forever">
+                        <span><b>{{Math.floor(user.playtime_2weeks/60)}}</b>h</span>
+                        <br>
+                        <small>{{Math.floor(user.playtime_forever/60)}}h</small>
+                    </span>
+                </td>
+
+
+                <td>
+                    <template v-if="user.bans">
+                        <span class="ui-tag red nowarp" v-if="user.bans.CommunityBanned">社区封禁</span>
+                        <span class="ui-tag red nowarp" v-if="user.bans.VACBanned">VAC封禁</span>
+                        <span class="ui-tag red nowarp" v-if="user.bans.NumberOfGameBans">
+                            游戏封禁
+                            <b>{{user.bans.NumberOfGameBans}}</b>
+                        </span>
+                        <span class="ui-tag red nowarp" v-if="user.bans.NumberOfVACBans">
+                            VAC封禁
+                            <b>{{user.bans.NumberOfVACBans}}</b>
+                        </span>
+                        <span class="ui-tag red nowarp" v-if="user.bans.EconomyBan !=='none'">交易封禁</span>
+                    </template>
+                </td>
+
+                <td>
+                    <span v-if="Logs[user.id64]">
+                        <time>{{dateFormat(Logs[user.id64].unix)}}</time>
+                        <br>
+                        <small><time>{{dateFormat(Logs[user.id64].unix,'hh:mm')}}</time></small>
+                    </span>
+                </td>
+
+                <td>
+                    <div style="margin:-8px;overflow: hidden;background:#FFF;width:76px;height:62px;">
+                        <a class="ui-line-button red" @click="log(user.id64,'red')">红</a>
+                        <a class="ui-line-button green" @click="log(user.id64,'green')">绿</a>
+                        <br>
+                        <a class="ui-line-button" @click="log(user.id64,null)">无</a>
+                        <a class="ui-line-button orange" @click="log(user.id64,'orange')">黄</a>
+                    </div>
+                </td>
+                <td>
+                    <a v-if="user.id64" :href="`https://steamcommunity.com/profiles/${user.id64}`" target="_blank">社区</a>
+                    <br>
+                    <a v-if="user.id64" :href="`https://steamrep.com/search?q=${user.id64}`" target="_blank">rep</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <pre>{{JSON.stringify($data,0,4)}}</pre>
+    <div class="post-box">
+        <h3>作弊者记录库</h3>
+        <p>独立的记录库名称，可以自己起名新建共享给其他人</p>
+        <input class="ui-input" v-model.lazy.trim="logName" placeholder="记录库名称"> [a-Z0-9_] 英文数字下划线
+    </div>
+</div>
+
+<script src="https://cdn.bootcss.com/vue/2.6.11/vue.min.js"></script>
+<script src="md5.min.js"></script>
+<script src="document.js?3"></script>

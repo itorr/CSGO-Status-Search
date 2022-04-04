@@ -1,0 +1,18 @@
+{
+  "name": "csgo-hacker-log",
+  "version": "1.0.0",
+  "description": "",
+  "main": "getAllInstance.js",
+  "scripts": {
+    "test": "node getAllInstance.js",
+    "less": "lessc document.less document.css"
+  },
+  "type": "module",
+  "author": "itorr",
+  "license": "ISC",
+  "dependencies": {
+    "node-fetch": "^3.2.3",
+    "querystringify": "^2.2.0",
+    "socks-proxy-agent": "^6.2.0-beta.0"
+  }
+}
