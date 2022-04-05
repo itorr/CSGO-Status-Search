@@ -1,6 +1,5 @@
 // localStorage.clear();
 
-
 const htmlEncode = function(str){  
 	return src.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/ /g,"&nbsp;").replace(/\'/g,"&#39;").replace(/\"/g,"&quot;");
 };
@@ -143,7 +142,9 @@ const data = {
 	sortKey:null,
 	sortType:1,
 	logName,
-	debug:false
+	debug:false,
+	callvoteKick:false,
+	disconnect:false,
 };
 
 const getLog = ()=>{
@@ -268,12 +269,12 @@ const getLevel = (id64,callback)=>{
 		}
 	})
 }
-const getInv = (id64,callback)=>{
-	proxy(`https://csgo.steamanalyst.com/fetchinv.php?steamID=${id64}&grid&list`,r=>{
-		console.log(r)
-	})
+
+const clear = _=>{
+	localStorage.clear()
+	location.reload()
 }
-getInv('76561198374544929')
+
 const SortKeyTypes = {
 	userId:'number',
 	id:'number',
@@ -444,10 +445,7 @@ const app = new Vue({
 			}
 			this.sortKey = key
 		},
-		clear(){
-			localStorage.clear()
-			location.reload()
-		},
+		clear,
 		copy(text){
 			let inputEl= document.createElement('input');
 			inputEl.value= text;
@@ -461,6 +459,8 @@ const app = new Vue({
 		text(val){
 			clearTimeout(this.T);
 			this.T = setTimeout(_=>{
+				this.sortKey = null;
+				this.sortType = 1;
 				localStorage['csgoLastStatusText'] = val;
 				this.refactor();
 			},300);

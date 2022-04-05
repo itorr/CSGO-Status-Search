@@ -305,7 +305,7 @@ time{
 
 
 .ui-line-button{
-	background: #F4F4F4;
+	background: #FFF;
 	cursor: pointer;
 	&.red{
 		background:@color-red;
@@ -326,6 +326,13 @@ time{
 	margin:20px 0;
 	padding:10px 20px;
 	background: #333;
+	line-height: 1.8;
+	h2{
+		padding:1em 0 0;
+	}
+	h3{
+		padding:1em 0 0;
+	}
 }
 .post-box{
 	margin:20px 0;
@@ -335,4 +342,20 @@ time{
 	p{
 		margin:.5em 0;
 	}
+}
+
+label{
+	cursor: pointer;
+	user-select: none;
+}
+.ui-copy{
+	cursor: pointer;
+}
+[v-cloak]{
+	display: none;
+}
+input[type="checkbox"]{
+	display: inline-block;
+	vertical-align: middle;
+	margin-top:.1em;
 }

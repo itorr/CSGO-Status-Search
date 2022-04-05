@@ -1,23 +1,16 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
 <title>对局用户信息速览 - CSGO Status Search - 神奇海螺实验室</title>
-
 <meta name="viewport" content="width=device-width,user-scalable=0">
-
-
 <!-- <link rel="stylesheet" href="document.css?10"> -->
 <script>
-
-const headEl = document.querySelector('head');
+    const headEl = document.querySelector('head');
     const loadScript = (src,el) =>{
         el = document.createElement('script');
         el.src = src;
         headEl.appendChild(el);
     };
-
     const uuid = localStorage['uuid'] || +new Date()
-
-
     if(location.hostname === 'lab.magiconch.com'){
         document.write(`<link rel="stylesheet" href="document.css?r=${uuid}" />`)
     }else{
@@ -25,7 +18,6 @@ const headEl = document.querySelector('head');
         loadScript('//cdnjs.cloudflare.com/ajax/libs/less.js/3.11.1/less.min.js');
     }
 </script>
-
 <div class="app" :data-runing="runing">
     <header>
         <h1>对局用户信息速览 - CSGO Status Search</h1>
@@ -35,14 +27,32 @@ const headEl = document.querySelector('head');
     <!-- <input type="range" v-model.number="h" min="1" max="20" step="0.1"> {{h}} -->
 
     <div class="info-box" v-if="info" v-cloak>
-
-        <div>
-            <p v-if="hackers.length">
+        <div v-if="hackers.length" style="padding:10px 10px 5px;">
+            <label>
+                <input type="checkbox" v-model="callvoteKick">
+                尝试投票踢出
+            </label>
+            <label>
+                <input type="checkbox" v-model="disconnect">
+                退出当前对局
+            </label>
+            <p>
+                <button @click="copy($refs['sayFuckingHacker'].innerText)">复制</button>
                 <span ref="sayFuckingHacker">
                     say
-                    "<span>{{hackers.map(hacker=>`${hacker.name}( ${hacker.id32} )`).join(', ').replace(/["']/g,'')}}</span> is Noob Hacker, fucking Reported"
+                    "<span>{{hackers.map(hacker=>`${hacker.name} ( ${hacker.id32} )`).join(', ').replace(/["']/g,'')}}</span> is Noob Hacker, fucking Reported"
+                    <span v-if="callvoteKick" v-for="hacker in hackers">;callvote kick {{hacker.userId}}</span>
+                    <span v-if="disconnect">;disconnect <span style="opacity:0;">您已被 VAC 封禁 w(ﾟДﾟ)w</span></span>
                 </span>
-                <button @click="copy($refs['sayFuckingHacker'].innerText)">copy</button>
+            </p>
+            <p>
+                <button @click="copy($refs['sayFuckingHackerZH'].innerText)">复制</button>
+                <span ref="sayFuckingHackerZH">
+                    say
+                    "<span>{{hackers.map(hacker=>`${hacker.name} ( ${hacker.id32} )`).join('、').replace(/["']/g,'')}}</span> 是个臭作弊狗，麻烦大家举报一下"
+                    <span v-if="callvoteKick" v-for="hacker in hackers">;callvote kick {{hacker.userId}}</span>
+                    <span v-if="disconnect">;disconnect <span style="opacity:0;">您已被 VAC 封禁 w(ﾟДﾟ)w</span></span>
+                </span>
             </p>
         </div>
         <table class="ui-table-box users-box">
@@ -99,7 +109,7 @@ const headEl = document.querySelector('head');
             <tr v-for="user in users" 
                 :data-bot="user.bot" 
                 :data-log="Logs[user.id64]&&Logs[user.id64].color">
-                <td>{{user.userId}}</td>
+                <td class="ui-copy" @click="copy(`callvote kick ${user.userId}`)">{{user.userId}}</td>
                 <td>{{user.id}}</td>
                 <td>
                     <span>{{user.ping}}</span>
@@ -120,7 +130,6 @@ const headEl = document.querySelector('head');
                 <!-- <td>{{user.state}}</td> -->
                 <!-- <td>{{user.connected}}</td> -->
                 <!-- <td>{{user.rate}}</td> -->
-
 
                 <td style="overflow: hidden;">
                     <img :src="user.avatar">
@@ -159,7 +168,6 @@ const headEl = document.querySelector('head');
                     </span>
                 </td>
 
-
                 <td>
                     <template v-if="user.bans">
                         <span class="ui-tag red nowarp" v-if="user.bans.CommunityBanned">社区封禁</span>
@@ -196,37 +204,70 @@ const headEl = document.querySelector('head');
                     <div v-if="user.id64" style="margin:-4px 0">
                         <a :href="`https://steamcommunity.com/profiles/${user.id64}`" target="_blank">社区</a>
                         <br>
-                        <a :href="`https://steamrep.com/search?q=${user.id64}`" target="_blank">rep</a>
+                        <!-- <a :href="`https://steamrep.com/search?q=${user.id64}`" target="_blank">rep</a> -->
+                        
+                        <a href="https://csgo.steamanalyst.com/users/76561198374544929" target="_blank">Ana</a>
                         <br>
                         <a :href="`https://csgostats.gg/player/${user.id64}`" target="_blank">stats</a>
                     </div>
                 </td>
             </tr>
         </table>
-
-
     </div>
 
-
     <div class="content-box">
-        <p>在玩 CSGO 头号特训模式中、经常会遇到眼熟的外挂用户。<br>
-            <b>CurseRed</b> 建议做一个 <code>status</code> 用户信息速查工具、方便我们快速确认当局敏感用户，于是就有了这个工具。</p>
-        <p>游戏中 <code>~</code> 调出控制台、输入 <code>status</code> 复制输出内容到输入框，即可对当前对局用户信息进行快速确认。</p>
+        <p>
+            在玩 CSGO 头号特训模式中、经常会遇到眼熟的外挂用户<br>
+            <b>CurseRed</b> 建议做一个 <code>status</code> 用户信息速查工具、方便我们快速确认当局敏感用户，于是就有了这个工具
+        </p>
+        <h2>使用</h2>
+        <p>
+            游戏中 <code>~</code> 调出控制台<br>
+            输入 <code>status</code> 回车，复制控制台中输出的内容到输入框<br>
+            即可对当前对局用户信息进行快速确认
+        </p>
+        <h2>功能</h2>
         <p>目前支持 <br>
             <b>唯一 ID</b>、<b>游戏昵称</b>、<b>社区昵称</b>、<b>头像</b>、<br>
             <b>资料未公开</b>、<b>Steam 注册时间</b>、<b>Steam 等级</b>、<b>CSGO 游戏时长</b>、<br>
             <b>VAC封禁</b>、<b>社区封禁</b>、<b>交易封禁</b>、<b>游戏封禁</b>、<br>
-            <b>延迟</b>、<b>发包数</b><br>等等信息的展示。</p>
-        <p>敏感信息会 <b style="color:red">标红</b> 提醒。</p>
-        <p>表格标题单击可排序。</p>
-        <p>标记功能可对当前对局玩家进行快速标记，目前共有三种颜色 
+            <b>延迟</b>、<b>发包数</b><br>等等信息的展示</p>
+        <p>敏感信息会 <b style="color:red">标红</b> 提醒</p>
+        <p>游戏中昵称和社区中不一致的情况会在界面上 <b style="color:red">红名</b> 标出社区昵称，可能是外挂功能一部分</p>
+        <p>表格标题单击可排序</p>
+        <p>点击玩家对应 <code>userId</code> 可复制投票踢指定玩家的控制台命令</p>
+
+        <h3>标记</h3>
+        <p>
+            标记功能可对当前对局玩家进行快速标记，目前共有三种颜色 
             <b style="color:red">红</b>、
             <b style="color:orange">黄</b>、
-            <b style="color:green">绿</b> 方便用户使用，具体作用可自行分配。</p>
-        <p>高级选项中可自行输入名称来 <b>建立</b> 或 <b>加入</b> 标记库，分享标记库名称可以多人公用标记信息。</p>
-        <p>当前对局有标红玩家时，可快速复制 <code>say</code> 命令，在控制台迅速发言。</p>
-        <p>参考信息不足时可点击用户右侧的链接们，跳转到第三方网站确认更多信息。</p>
+            <b style="color:green">绿</b>
+            方便用户使用，具体作用可自行分配
+        </p>
+        <p>每次标记会记录操作时间，下回在对局中遇到已标记玩家可以看到最后一次标记时间</p>
+        <p>高级选项中可自行输入名称来 <b>建立</b> 或 <b>加入</b> 标记库，分享标记库名称可以多人公用标记信息</p>
+        
+        <h3>say</h3>
+        <p>当前对局有标红玩家时，可快速复制 <code>say</code> 命令，在控制台迅速发言</p>
+        <p>
+            休闲模式可勾选 <label>
+                <input type="checkbox" v-model="callvoteKick">
+                尝试投票踢出
+            </label> 在发言同时尝试发起投票踢出对应玩家
+        </p>
+        <p>
+            勾选 <label>
+                <input type="checkbox" v-model="disconnect">
+                退出当前对局
+            </label> 可在发言同时退出当前对局
+        </p>
+
+        <h2>辅助</h2>
+        <p>参考信息不足时可点击用户右侧的链接们、跳转到第三方网站确认更多信息</p>
         <p>也建议在CSGO作弊狗 <a href="http://csgozbg.cn/" target="_blank">http://csgozbg.cn/</a> 数据库中查询是否有已登记的作弊玩家</p>
+
+
         <h2>参考</h2>
         <p>
             Steam Web API Documentation 
@@ -265,9 +306,10 @@ const headEl = document.querySelector('head');
     </div>
 </div>
 
+<button onclick="clear()">清空全部缓存</button>
+
 <script src="https://cdn.bootcss.com/vue/2.6.11/vue.min.js"></script>
 <script src="md5.min.js"></script>
 <script>
-
     loadScript(`document.js?r=${uuid}`);
 </script>
