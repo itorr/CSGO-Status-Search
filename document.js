@@ -1,5 +1,11 @@
 // localStorage.clear();
 
+
+const htmlEncode = function(str){  
+	return src.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/ /g,"&nbsp;").replace(/\'/g,"&#39;").replace(/\"/g,"&quot;");
+};
+
+
 Date.prototype.format=function(format='yyyy-MM-dd'){
 	let o = {
 		"M+" : this.getMonth()+1, //month
@@ -96,7 +102,7 @@ const proxyHTML = (uri,callback)=>{
 const deepCopy = o=>JSON.parse(JSON.stringify(o));
 
 
-const text = `Connected to =[A:1:3561541640:19979]:0
+const text = localStorage['csgoLastStatusText']||`Connected to =[A:1:3561541640:19979]:0
 hostname: Valve CS:GO Hong Kong Server (srcds2055-hkg1.142.42)
 version : 1.38.2.4 secure
 os : Linux
@@ -136,7 +142,8 @@ const data = {
 	Logs:{},
 	sortKey:null,
 	sortType:1,
-	logName
+	logName,
+	debug:false
 };
 
 const getLog = ()=>{
@@ -261,7 +268,12 @@ const getLevel = (id64,callback)=>{
 		}
 	})
 }
-
+const getInv = (id64,callback)=>{
+	proxy(`https://csgo.steamanalyst.com/fetchinv.php?steamID=${id64}&grid&list`,r=>{
+		console.log(r)
+	})
+}
+getInv('76561198374544929')
 const SortKeyTypes = {
 	userId:'number',
 	id:'number',
@@ -402,7 +414,9 @@ const app = new Vue({
 						if(user){
 							app.$set(user,'summarie',summarie)
 							app.$set(user,'avatar',summarie.avatarmedium)
+							app.$set(user,'personaname',summarie.personaname)
 							app.$set(user,'timecreated',summarie.timecreated||null)
+							
 
 							if(summarie.timecreated){
 								GetRecentlyPlayed(id64,r=>{
@@ -433,13 +447,26 @@ const app = new Vue({
 		clear(){
 			localStorage.clear()
 			location.reload()
+		},
+		copy(text){
+			let inputEl= document.createElement('input');
+			inputEl.value= text;
+			document.body.appendChild(inputEl);
+			inputEl.select();
+			document.execCommand('Copy'); 
+			inputEl.remove()
 		}
 	},
 	watch:{
-		text(){
-			this.refactor();
+		text(val){
+			clearTimeout(this.T);
+			this.T = setTimeout(_=>{
+				localStorage['csgoLastStatusText'] = val;
+				this.refactor();
+			},300);
 		},
 		logName(val){
+			if(!val) val = 'test';
 			localStorage[localStorageLogNameKey] = val;
 			getLog()
 		}
@@ -474,6 +501,9 @@ const app = new Vue({
 				const bString = String(b[key]);
 				return aString.localeCompare(bString) * type;
 			})
+		},
+		hackers(){
+			return this.users.filter(user=>this.Logs[user.id64] && this.Logs[user.id64].color==='red')
 		}
 	}
 })
