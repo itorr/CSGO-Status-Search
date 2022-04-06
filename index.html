@@ -107,6 +107,7 @@
                 <th style="width:36px"></th>
             </tr>
             <tr v-for="user in users" 
+                :key="user.id64"
                 :data-bot="user.bot" 
                 :data-log="Logs[user.id64]&&Logs[user.id64].color">
                 <td class="ui-copy" @click="copy(`callvote kick ${user.userId}`)">{{user.userId}}</td>
