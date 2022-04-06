@@ -140,6 +140,7 @@
                         <time>{{dateFormat(user.timecreated)}}</time>
                         <br>
                         <small><time>{{dateFormat(user.timecreated,'hh:mm')}}</time></small>
+                        <small>{{Math.floor((new Date()/1000 - user.timecreated)/3600/24/356)}}年</small>
                     </span>
                     <span v-else-if="user.timecreated === undefined"></span>
                     <span v-else class="ui-tag red nowarp">
@@ -223,7 +224,8 @@
         <h2>使用</h2>
         <p>
             游戏中 <code>~</code> 调出控制台<br>
-            输入 <code>status</code> 回车，复制控制台中输出的内容到输入框<br>
+            输入 <code>status</code> 回车<br>
+            复制控制台中输出的内容到输入框<br>
             即可对当前对局用户信息进行快速确认
         </p>
         <h2>功能</h2>
@@ -251,7 +253,7 @@
         <h3>say</h3>
         <p>当前对局有标红玩家时，可快速复制 <code>say</code> 命令，在控制台迅速发言</p>
         <p>
-            休闲模式可勾选 <label>
+            竞技、休闲模式可勾选 <label>
                 <input type="checkbox" v-model="callvoteKick">
                 尝试投票踢出
             </label> 在发言同时尝试发起投票踢出对应玩家
@@ -265,13 +267,21 @@
 
         <h2>辅助</h2>
         <p>参考信息不足时可点击用户右侧的链接们、跳转到第三方网站确认更多信息</p>
-        <p>也建议在CSGO作弊狗 <a href="http://csgozbg.cn/" target="_blank">http://csgozbg.cn/</a> 数据库中查询是否有已登记的作弊玩家</p>
+        <p>
+            <b>csgostats.gg</b> 可查看玩家对局情况
+            <a href="https://csgostats.gg" target="_blank">https://csgostats.gg</a>
+        </p>
+        <p>
+            <b>SteamAnalyst</b> 可预估玩家饰品价格 
+            <a href="https://csgo.steamanalyst.com/" target="_blank">https://csgo.steamanalyst.com</a>
+        </p>
+        <p>头号特训模式玩家也可以尝试在 <b>CSGO作弊狗</b> <a href="http://csgozbg.cn/" target="_blank">http://csgozbg.cn</a> 数据库中查询是否有已登记的作弊玩家</p>
 
 
         <h2>参考</h2>
         <p>
             Steam Web API Documentation 
-            <a href="https://steamapi.xpaw.me/" target="_blank">https://steamapi.xpaw.me/</a> <span>with ♥ by <a href="https://xpaw.me" target="_blank">xPaw</a></span></p>
+            <a href="https://steamapi.xpaw.me/" target="_blank">https://steamapi.xpaw.me</a> <span>with ♥ by <a href="https://xpaw.me" target="_blank">xPaw</a></span></p>
         <p>
             Steam Web API
             <a href="https://developer.valvesoftware.com/wiki/Steam_Web_API" target="_blank">https://developer.valvesoftware.com/wiki/Steam_Web_API</a>
