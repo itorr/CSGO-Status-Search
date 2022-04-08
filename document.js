@@ -517,7 +517,13 @@ const app = new Vue({
 app.refactor();
 getLog();
 
-
+document.addEventListener('paste',e=>{
+	const item = e.clipboardData.items[0];
+	if(!item) return;
+	item.getAsString(text=>{
+		app.text = text
+	})
+})
 
 window._hmt = [];
 window.dataLayer = [

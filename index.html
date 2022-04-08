@@ -5,9 +5,10 @@
 <!-- <link rel="stylesheet" href="document.css?10"> -->
 <script>
     const headEl = document.querySelector('head');
-    const loadScript = (src,el) =>{
+    const loadScript = (src,cb=_=>{},el) =>{
         el = document.createElement('script');
         el.src = src;
+        el.onload=cb;
         headEl.appendChild(el);
     };
     const uuid = localStorage['uuid'] || +new Date()
@@ -208,7 +209,7 @@
                         <br>
                         <!-- <a :href="`https://steamrep.com/search?q=${user.id64}`" target="_blank">rep</a> -->
                         
-                        <a href="https://csgo.steamanalyst.com/users/76561198374544929" target="_blank">Ana</a>
+                        <a :href="`https://csgo.steamanalyst.com/users/${user.id64}`" target="_blank">Ana</a>
                         <br>
                         <a :href="`https://csgostats.gg/player/${user.id64}`" target="_blank">stats</a>
                     </div>
@@ -216,6 +217,23 @@
             </tr>
         </table>
     </div>
+
+
+    <div style="padding:20px 0 0;">
+        <label>
+            <input type="checkbox" v-model="debug">
+            高级选项 + 使用说明
+        </label>
+    </div>
+    <div class="debug-box" v-if="debug">
+        <div class="post-box">
+            <h3>标记库</h3>
+            <p>独立的记录库名称，可以自己起名新建共享给其他人</p>
+            <input class="ui-input" v-model.lazy.trim="logName" placeholder="记录库名称"> [a-Z0-9_] 英文数字下划线
+        </div>
+        <div class="post-box">
+            <button @click="clear()">清空全部缓存</button>
+        </div>
 
     <div class="content-box">
         <p>
@@ -297,30 +315,14 @@
         </p>
     </div>
 
-
-    <div style="padding:20px 0 0;">
-        <label>
-            <input type="checkbox" v-model="debug">
-            高级选项
-        </label>
-    </div>
-    <div class="debug-box" v-if="debug">
-        <div class="post-box">
-            <h3>标记库</h3>
-            <p>独立的记录库名称，可以自己起名新建共享给其他人</p>
-            <input class="ui-input" v-model.lazy.trim="logName" placeholder="记录库名称"> [a-Z0-9_] 英文数字下划线
-        </div>
-        <div class="post-box">
-            <button @click="clear()">清空全部缓存</button>
-        </div>
         <!-- <pre>{{JSON.stringify($data,0,4)}}</pre> -->
     </div>
 </div>
 
-<button onclick="clear()">清空全部缓存</button>
-
+<a id="c">清空全部缓存</a>
 <script src="https://cdn.bootcss.com/vue/2.6.11/vue.min.js"></script>
 <script src="md5.min.js"></script>
 <script>
-    loadScript(`document.js?r=${uuid}`);
+    loadScript(`document.js?r=${uuid}`,_=>{c.onclick=clear});
+    
 </script>
