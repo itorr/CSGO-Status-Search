@@ -14,6 +14,7 @@ button,input{
 }
 a{
 	color:#3270ff;
+	text-decoration: none;
 }
 ::selection{
 	background: #1e67ff;
@@ -30,15 +31,58 @@ a{
 }
 header{
 	padding:20px;
-	line-height: 1.5;
+	line-height:42px;
+	overflow: hidden;
+	h1{
+		margin:0;
+		font-family:'苹方';
+		/* font-weight:1200; */
+		/* color:#FFF; */
+		text-shadow: 1px 1px 0 #ff658c, -1px -1px 0 #77cdc7;
+		float: left;
+	}
+	.user-box{
+		float: right;
+		line-height:42px;
+		position: relative;
+		padding-left:50px;
+		img{
+			float: left;
+			position: absolute;
+			left:0;
+			top:0;
+			width: 42px;
+			height: 42px;
+			border-radius:42px;
+			background:#444;
+		}
+	}
 }
-h1{
-	margin:0;
-	font-family:'苹方';
-	/* font-weight:1200; */
-	/* color:#FFF; */
-    text-shadow: 1px 1px 0 #ff658c, -1px -1px 0 #77cdc7;
+
+
+
+
+.login-box{
+	padding:100px 20px;
+	a{
+		display: block;
+		font-size:30px;
+		font-weight: bold;;
+		padding:20px 0;
+		width: 340px;
+		text-align: center;
+		margin:0 auto;
+		
+		background-image: linear-gradient(144deg,#AF40FF, #5B42F3 50%,#00DDEB);
+		border:2px solid #2e1c99;
+		text-shadow:0 2px 3px #5B42F3;
+		color:#FFF;
+		border-radius:10px;
+
+		box-shadow: rgba(151,65,252,30%) 0 15px 40px -5px;
+	}
 }
+
 
 h2,
 h3,h4,h5,h6{

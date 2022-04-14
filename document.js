@@ -58,14 +58,14 @@ const request = (method,uri,data,callback,nocache)=>{
 
 		}
 		
-		return callback(data);
+		return setTimeout(callback.bind(null,data));
 	}
 
 	fetch(uri,{
 		method,
 		mode: 'cors',
-		body,
 		credentials: 'include',
+		body,
 		headers: {
 			'content-type': 'application/json'
 		}
@@ -75,7 +75,7 @@ const request = (method,uri,data,callback,nocache)=>{
 	}).catch(error => console.error(error))
 };
 
-
+const baseAPI = 'https://lab.magiconch.com/api/';
 const requestText = (method,uri,data,callback)=>{
 	let body = null;
 	if(data){
@@ -89,19 +89,13 @@ const requestText = (method,uri,data,callback)=>{
 	}).then(res => res.text()).then(data => callback(data)).catch(error => console.error(error))
 };
 
-const proxy = (uri,callback)=>{
-	request('GET',`https://lab.magiconch.com/api/fetch?uri=${encodeURIComponent(uri)}`,null,callback)
-}
-
-const proxyHTML = (uri,callback)=>{
-	requestText('GET',`https://lab.magiconch.com/api/fetch?uri=${encodeURIComponent(uri)}`,null,callback)
-}
-
-
 const deepCopy = o=>JSON.parse(JSON.stringify(o));
 
 
-const text = localStorage['csgoLastStatusText']||`Connected to =[A:1:3561541640:19979]:0
+const text = localStorage['csgoLastStatusText']||'';
+
+/*
+`Connected to =[A:1:3561541640:19979]:0
 hostname: Valve CS:GO Hong Kong Server (srcds2055-hkg1.142.42)
 version : 1.38.2.4 secure
 os : Linux
@@ -128,13 +122,17 @@ players : 17 humans, 0 bots (16/17 max) (not hibernating)
 # 18 17 "Stranger" STEAM_1:0:171506710 00:17 121 66 spawning 786432
 # 19 18 "坠入虚空飞向你" STEAM_1:0:644594952 00:14 237 72 spawning 196608
 #end`;
+*/
 
 const logNameRegex = /^\w+$/;
 const localStorageLogNameKey = 'csgo-last-log-name';
+const localStorageContentKey = 'csgo-content';
 let logName = localStorage.getItem(localStorageLogNameKey)||'test';
 
 const data = {
 	text,
+	user:undefined,
+	authURL:null,
 	info:null,
 	runing:false,
 	h:12,
@@ -143,13 +141,14 @@ const data = {
 	sortType:1,
 	logName,
 	debug:false,
+	content:!localStorage.getItem(localStorageContentKey),
 	callvoteKick:false,
 	disconnect:false,
 };
 
 const getLog = ()=>{
 	const _Logs = {};
-	request('get',`https://lab.magiconch.com/api/csgo/user-log/${app.logName}`,null,logs=>{
+	request('get',`${baseAPI}csgo/user-log/${app.logName}`,null,logs=>{
 		if(logs){
 			logs.forEach(log=>{
 				_Logs[log.id64] = log
@@ -160,7 +159,7 @@ const getLog = ()=>{
 	},'nocache')
 }
 const log = (id64,color)=>{
-	request('post',`https://lab.magiconch.com/api/csgo/user-log/${app.logName}/${id64}`,{
+	request('post',`${baseAPI}csgo/user-log/${app.logName}/${id64}`,{
 		color
 	},log=>{
 		// app.$set(Logs,id64,log)
@@ -222,54 +221,6 @@ const key = '45696DEC3D074506B7203C0CA93E4CB1';
 const Users = {};
 
 
-const GetRecentlyPlayed = (id64,callback)=>{
-	proxy(`https://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v1/?key=${key}&steamid=${id64}`,r=>{
-		try{
-
-			if(!r.response.games){
-				// console.log(id64,/GetRecentlyPlayedGames/,/r/,r)
-				return callback();
-			}
-
-
-			const Games = {};
-			r.response.games.forEach(game=>{
-				Games[game.appid] = game;
-			})
-	
-			const game = Games[730];
-
-			if(!game){
-				// console.log(id64,/GetRecentlyPlayedGames/,/r/,r)
-				return callback();
-			}
-
-			//playtime_2weeks
-			//playtime_forever
-			callback(game);
-
-		}catch(e){
-			console.log(id64,e)
-			callback();
-		}
-	})
-}
-
-const getLevel = (id64,callback)=>{
-	proxy(`https://api.steampowered.com/IPlayerService/GetSteamLevel/v1/?key=${key}&steamid=${id64}`,r=>{
-		try{
-			if(r.response.player_level === undefined){
-				console.log(id64,/GetSteamLevel/,r,`https://api.steampowered.com/IPlayerService/GetSteamLevel/v1/?key=${key}&steamid=${id64}`)
-				return;
-			}
-			callback(r.response.player_level)
-		}catch(e){
-			console.log(id64,/GetSteamLevel/,r)
-			callback()
-		}
-	})
-}
-
 const clear = _=>{
 	localStorage.clear()
 	location.reload()
@@ -292,6 +243,7 @@ const SortKeyTypes = {
 		return (_a - _b) * type
 	}
 }
+const nocache = true;
 const app = new Vue({
 	el:'.app',
 	data,
@@ -347,38 +299,6 @@ const app = new Vue({
 					if(id64){
 						Users[id64] = user;
 						id64s.push(id64)
-
-						/*
-						proxyHTML(`https://steamcommunity.com/profiles/${id64}`,html=>{
-							console.log(html)
-							//等级
-							'.friendPlayerLevel .friendPlayerLevelNum'
-
-							//游戏数
-							'a[href*="/games/?tab=all"] .profile_count_link_total'
-
-							//徽章
-							'a[href$="/badges/"] .profile_count_link_total'
-
-							//在线
-							'.profile_in_game.online'
-						})
-						*/
-
-						// proxyHTML(`https://steamrep.com/search?q=${id64}`,html=>{
-	
-						// 	const tmRegex = /g_TimeStamp = '(\d+)'/
-						// 	const tmMatch = html.match(tmRegex)
-						// 	if(!tmMatch) return
-	
-						// 	const tm = tmMatch[1];
-						// 	proxy(`https://steamrep.com/util.php?op=getSteamProfileInfo&id=${id64}&tm=${tm}`,r=>{
-						// 		if(r.error)return console.log(r.error,r);
-						// 		// user.rep = r;
-						// 		app.$set(user,'rep',r)
-						// 	})
-						// })
-
 					}
 					return
 				}
@@ -398,41 +318,34 @@ const app = new Vue({
 			})
 
 			if(id64s.length){
-				proxy(`https://api.steampowered.com/ISteamUser/GetPlayerBans/v1/?key=${key}&steamids=${id64s.join(',')}`,r=>{
-					// console.log(r)
-					r.players.forEach(bans=>{
-						// console.log(bans.SteamId,Users[bans.SteamId])
-						if(Users[bans.SteamId]){
-							app.$set(Users[bans.SteamId],'bans',bans)
-						}
-					})
-				})
-	
-				proxy(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${key}&steamids=${id64s.join(',')}`,r=>{
-					r.response.players.forEach(summarie=>{
-						const id64 = summarie.steamid;
-						const user = Users[id64];
-						if(user){
-							app.$set(user,'summarie',summarie)
-							app.$set(user,'avatar',summarie.avatarmedium)
-							app.$set(user,'personaname',summarie.personaname)
-							app.$set(user,'timecreated',summarie.timecreated||null)
-							
-
-							if(summarie.timecreated){
-								GetRecentlyPlayed(id64,r=>{
-									if(!r) return;
-									app.$set(user,'playtime_2weeks',r.playtime_2weeks);
-									app.$set(user,'playtime_forever',r.playtime_forever);
-								})
-		
-								getLevel(id64,level=>{
-									app.$set(user,'level',level);
-								})
+				request('get',`${baseAPI}steam/users?id64s=${id64s.join(',')}`,null,r=>{
+					const users = r.users;
+					users.forEach(user=>{
+						const id64 = user.id64;
+						if(Users[id64]){
+							for(let key in user){
+								app.$set(Users[id64],key,user[key]);
 							}
 						}
-					})
-				})
+					});
+					const getDetailUsersID64 = [];
+					app.info.users.forEach(user=>{
+						if(user.timecreated && !user.detail) getDetailUsersID64.push(user.id64);
+					});
+					if(getDetailUsersID64.length)
+					request('get',`${baseAPI}steam/users/detail?id64s=${getDetailUsersID64.join(',')}`,null,r=>{
+						const users = r.users;
+						users.forEach(user=>{
+							const id64 = user.id64;
+							if(Users[id64]){
+								for(let key in user){
+									app.$set(Users[id64],key,user[key]);
+								}
+							}
+						})
+						
+					},nocache);
+				},nocache);
 			}
 
 			this.info = info
@@ -469,6 +382,13 @@ const app = new Vue({
 			if(!val) val = 'test';
 			localStorage[localStorageLogNameKey] = val;
 			getLog()
+		},
+		content(val){
+			if(val){
+				localStorage.removeItem(localStorageContentKey);
+			}else{
+				localStorage.setItem(localStorageContentKey,1);
+			}
 		}
 	},
 	computed:{
@@ -508,16 +428,18 @@ const app = new Vue({
 	}
 })
 
+request('get',`${baseAPI}steam/info`,null,r=>{
+	app.user = r.user || null;
+	app.authURL = r.authURL;
 
-// proxy(`https://steamcommunity.com/inventory/76561198374544929/730/2?l=schinese&count=1000`,r=>{
-// 	console.log(/库存/,r)
-// })
+	if(r.user){
+		app.refactor();
+		getLog();
+	}
+},nocache);
 
 
-app.refactor();
-getLog();
-
-document.addEventListener('paste',e=>{
+window.addEventListener('paste',e=>{
 	const item = e.clipboardData.items[0];
 	if(!item) return;
 	item.getAsString(text=>{
