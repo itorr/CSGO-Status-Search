@@ -243,7 +243,7 @@ const SortKeyTypes = {
 		return (_a - _b) * type
 	}
 }
-const nocache = true;
+const nocache = false;
 const app = new Vue({
 	el:'.app',
 	data,

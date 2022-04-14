@@ -2,6 +2,7 @@
 <meta charset="UTF-8">
 <title>CSGO 对局信息速览 - CSGO Status Search - 神奇海螺实验室</title>
 <meta name="viewport" content="width=device-width,user-scalable=0">
+<meta name="discription" content="对局用户信息速览">
 <script>
     const headEl = document.querySelector('head');
     const loadScript = (src,cb=_=>{},el) =>{
@@ -20,7 +21,7 @@
 </script>
 <div class="app" :data-runing="runing">
     <header>
-        <h1>对局用户信息速览 - CSGO Status Search</h1>
+        <h1>CSGO 对局信息速览 - CSGO Status Search</h1>
         <div class="user-box" v-if="user" v-cloak>
             <img :src="user.avatar">
             {{user.name}}
