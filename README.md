@@ -53,7 +53,7 @@ CurseRed 建议做一个 status 用户信息速查工具、方便我们快速确
 
 竞技、休闲模式可勾选 尝试投票踢出 在发言同时尝试发起投票踢出对应玩家
 
-### 辅助
+## 辅助
 参考信息不足时可点击用户右侧的链接们、跳转到第三方网站确认更多信息
 
 csgostats.gg 可查看玩家对局情况 https://csgostats.gg
@@ -62,7 +62,7 @@ SteamAnalyst 可预估玩家饰品价格 https://csgo.steamanalyst.com
 
 头号特训模式玩家也可以尝试在 CSGO作弊狗 http://csgozbg.cn 数据库中查询是否有已登记的作弊玩家
 
-### 参考
+## 参考
 
 Steam Web API Documentation https://steamapi.xpaw.me with ♥ by xPaw
 
