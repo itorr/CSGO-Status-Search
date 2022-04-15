@@ -3,22 +3,7 @@
 <title>CSGO 对局信息速览 - CSGO Status Search - 神奇海螺实验室</title>
 <meta name="viewport" content="width=device-width,user-scalable=0">
 <meta name="discription" content="对局用户信息速览">
-<script>
-    const headEl = document.querySelector('head');
-    const loadScript = (src,cb=_=>{},el) =>{
-        el = document.createElement('script');
-        el.src = src;
-        el.onload=cb;
-        headEl.appendChild(el);
-    };
-    const uuid = localStorage['uuid'] || +new Date()
-    if(location.hostname === 'lab.magiconch.com'){
-        document.write(`<link rel="stylesheet" href="document.css?r=${uuid}" />`)
-    }else{
-        document.write(`<link rel="stylesheet/less" href="document.less" />`)
-        loadScript('//cdnjs.cloudflare.com/ajax/libs/less.js/3.11.1/less.min.js');
-    }
-</script>
+<link rel="stylesheet" href="document.css?r=1" />
 <div class="app" :data-runing="runing">
     <header>
         <h1>CSGO 对局信息速览 - CSGO Status Search</h1>
@@ -342,11 +327,12 @@
 </div>
 
 <a id="c" style="color:#333;cursor:pointer;">clear</a>
-<script src="https://cdn.bootcss.com/vue/2.6.11/vue.min.js"></script>
-<script src="md5.min.js"></script>
 <script>
-loadScript(`document.js?r=${uuid}`,_=>{c.onclick=_=>{
+c.onclick=_=>{
 	localStorage.clear()
 	location.reload()
-}});
+};
 </script>
+<script src="https://cdn.bootcss.com/vue/2.6.11/vue.min.js"></script>
+<script src="md5.min.js"></script>
+<script src="document.js?r=1"></script>

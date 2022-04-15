@@ -50,17 +50,26 @@ const request = (method,uri,data,callback,nocache)=>{
 		data
 	].join('|'))
 
-	if(!nocache && localStorage[key]){
-		let data = localStorage[key];
-		try{
-			data = JSON.parse(data);
-		}catch(e){
+	const clearCache = _=>{
+		console.log(/强制清除缓存/,uri,key);
+		localStorage.removeItem(key);
+	};
+	// console.log(/nocache/,nocache);
 
+	if(!nocache){
+		let data = localStorage[key];
+		if(data){
+			try{
+				// console.log(/缓存的数据/,data);
+				data = JSON.parse(data);
+				return setTimeout(callback.bind(null,data,clearCache));
+			}catch(e){
+				
+			}
 		}
-		
-		return setTimeout(callback.bind(null,data));
 	}
 
+	// console.log(/发起请求/,uri);
 	fetch(uri,{
 		method,
 		mode: 'cors',
@@ -70,8 +79,10 @@ const request = (method,uri,data,callback,nocache)=>{
 			'content-type': 'application/json'
 		}
 	}).then(res => res.json()).then(data => {
-		localStorage[key] = JSON.stringify(data)
-		callback(data)
+		if(!nocache){
+			localStorage[key] = JSON.stringify(data);
+		}
+		callback(data,clearCache);
 	}).catch(error => console.error(error))
 };
 
@@ -428,13 +439,15 @@ const app = new Vue({
 	}
 })
 
-request('get',`${baseAPI}steam/info`,null,r=>{
+request('get',`${baseAPI}steam/info`,null,(r,clearCache)=>{
 	app.user = r.user || null;
 	app.authURL = r.authURL;
-
+	// console.log(/123/,r,clearCache);
 	if(r.user){
 		app.refactor();
 		getLog();
+	}else{
+		clearCache();
 	}
 },nocache);
 
@@ -453,7 +466,16 @@ window.dataLayer = [
     ['config', 'G-13BQC1VDD8']
 ];
 window.gtag = function(){dataLayer.push(arguments)};
+
+const headEl = document.querySelector('head');
+const loadScript = (src,cb=_=>{},el) =>{
+	el = document.createElement('script');
+	el.src = src;
+	el.onload=cb;
+	headEl.appendChild(el);
+};
+
 setTimeout(_=>{
-	loadScript('//hm.baidu.com/hm.js?f4e477c61adf5c145ce938a05611d5f0');
+	('//hm.baidu.com/hm.js?f4e477c61adf5c145ce938a05611d5f0');
 	loadScript('//www.googletagmanager.com/gtag/js?id=G-13BQC1VDD8');
 },400);
