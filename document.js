@@ -242,7 +242,7 @@ const SortKeyTypes = {
 	id:'number',
 	level:'number',
 	ping:'number',
-	playtime_2weeks:'number',
+	csgo_playtime_2weeks:'number',
 	timecreated:'number',
 	name:'string',
 	logUnix(a,b,type){
