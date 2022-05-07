@@ -69,15 +69,19 @@ const getUserLevel = async id64 =>{
 };
 
 const getUserDetailCallback = async id64 =>{
-	const user ={};
+	const user = {};
+	
 	const game = await GetUserRecentlyPlayed(id64);
-
-	user.csgo_playtime_2weeks = game.playtime_2weeks;
-	user.csgo_playtime_forever = game.playtime_forever;
+	if(game){
+		user.csgo_playtime_2weeks = game.playtime_2weeks;
+		user.csgo_playtime_forever = game.playtime_forever;
+	}
 	
 	const level = await getUserLevel(id64);
-	
-	user.level = level;
+	if(level){
+		user.level = level;
+	}
+
 	return user;
 };
 //76561198374544929
