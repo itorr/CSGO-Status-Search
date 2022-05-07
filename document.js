@@ -330,8 +330,7 @@ const app = new Vue({
 			})
 
 			if(id64s.length){
-				request('get',`${steamBaseAPI}users?id64s=${id64s.join(',')}`,null,r=>{
-					const users = r.users;
+				request('get',`${steamBaseAPI}users?id64s=${id64s.join(',')}`,null,users=>{
 					users.forEach(user=>{
 						const id64 = user.id64;
 						if(Users[id64]){
