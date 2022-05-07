@@ -329,34 +329,28 @@ const app = new Vue({
 			})
 
 			if(id64s.length){
-				// request('get',`${baseAPI}steam/users?id64s=${id64s.join(',')}`,null,r=>{
-				// 	const users = r.users;
-				// 	users.forEach(user=>{
-				// 		const id64 = user.id64;
-				// 		if(Users[id64]){
-				// 			for(let key in user){
-				// 				app.$set(Users[id64],key,user[key]);
-				// 			}
-				// 		}
-				// 	});
-				// 	const getDetailUsersID64 = [];
-				// 	app.info.users.forEach(user=>{
-				// 		if(user.timecreated && !user.detail) getDetailUsersID64.push(user.id64);
-				// 	});
-				// 	if(getDetailUsersID64.length)
-					request('get',`${baseAPI}users?id64s=${id64s}`,null,r=>{
-						const users = r.users;
-						users.forEach(user=>{
-							const id64 = user.id64;
-							if(Users[id64]){
-								for(let key in user){
-									app.$set(Users[id64],key,user[key]);
-								}
+				request('get',`${baseAPI}users?id64s=${id64s.join(',')}`,null,r=>{
+					const users = r.users;
+					users.forEach(user=>{
+						const id64 = user.id64;
+						if(Users[id64]){
+							for(let key in user){
+								app.$set(Users[id64],key,user[key]);
 							}
-						})
-						
-					},nocache);
-				// },nocache);
+						}
+					});
+					app.info.users.forEach(user=>{
+						if(user.timecreated && !user.detail){
+							const { id64 } = user;
+							request('get',`${baseAPI}detail?id64=${id64}`,null,r=>{
+								for(k in r){
+									const v = r[k]
+									app.$set(user,k,v);
+								}
+							})
+						}
+					});
+				});
 			}
 
 			this.info = info

@@ -32,8 +32,6 @@ const get = async uri =>{
 	}
 }
 
-
-
 const id64Regex = /7656[0-9]{12,14}/g;
 
 const steamAPIBaseURL = 'https://api.steampowered.com/';
@@ -92,71 +90,6 @@ const getUsersBySteam = async id64s => {
 		return [];
 	}
 };
-const GetUserRecentlyPlayed = async id64 =>{
-	const uri = `${steamAPIBaseURL}IPlayerService/GetRecentlyPlayedGames/v1/?key=${apiKey}&steamid=${id64}`;
-	try{
-		const r = await get(uri);
-		const games = r.response['games'];
-		if(!games) return null;
-
-		const Games = {};
-		games.forEach(game => {
-			Games[game.appid] = game;
-		});
-		const game = Games[730];
-		return game;
-	}catch(e){
-		console.log(/获取game time出错/,e,id64,uri);
-		return null;
-	}
-};
-const getUserLevel = async id64 =>{
-	const uri = `${steamAPIBaseURL}IPlayerService/GetSteamLevel/v1/?key=${apiKey}&steamid=${id64}`;
-	try{
-		const r = await get(uri);
-		return r.response['player_level'];
-	}catch(e){
-		console.log(/获取level出错/,e,id64,uri);
-		return null;
-	}
-};
-const getUsersDetailCallback = async (id64s,callback) =>{
-	const users = await getUsersBySteam(id64s);
-
-	let length = users.length;
-	let index = users.length;
-
-	let gamei = 0;
-	let leveli = 0;
-	const cb = _=>{
-		if( gamei === length && leveli === length){
-			users.forEach(user=>{
-				const id64 = user.id64;
-			});
-			callback(users);
-		}
-	};
-	while(index--){
-		const user = users[index];
-		const id64 = user.id64;
-		if(user.timecreated && !user.detail){
-			GetUserRecentlyPlayed(id64).then(game=>{
-				if(game){
-					user.csgo_playtime_2weeks = game.playtime_2weeks;
-					user.csgo_playtime_forever = game.playtime_forever;
-				}
-				gamei++;
-				cb();
-			});
-			getUserLevel(id64).then(level=>{
-				user.level = level;
-				leveli++;
-				cb();
-			})
-			user.detail = 1;
-		}
-	};
-};
 //76561198374544929
 export default async function handler(req, res) {
     const query = req.query;
@@ -166,7 +99,7 @@ export default async function handler(req, res) {
 
 	const id64s = id64sQueryString.match(id64Regex);
 
-    getUsersDetailCallback(id64s,users=>{
-        res.status(200).json(users);
-    })
+	const users = await getUsersBySteam(id64s);
+
+	res.status(200).json(users);
 }
