@@ -445,6 +445,9 @@ const app = new Vue({
 // 	}
 // },nocache);
 
+app.refactor();
+getLog();
+
 
 window.addEventListener('paste',e=>{
 	const item = e.clipboardData.items[0];
