@@ -86,7 +86,8 @@ const request = (method,uri,data,callback,nocache)=>{
 	}).catch(error => console.error(error))
 };
 
-const baseAPI = 'api/';
+const baseAPI = 'https://lab.magiconch.com/api/';
+const steamBaseAPI = 'api/';
 const requestText = (method,uri,data,callback)=>{
 	let body = null;
 	if(data){
@@ -329,7 +330,7 @@ const app = new Vue({
 			})
 
 			if(id64s.length){
-				request('get',`${baseAPI}users?id64s=${id64s.join(',')}`,null,r=>{
+				request('get',`${steamBaseAPI}users?id64s=${id64s.join(',')}`,null,r=>{
 					const users = r.users;
 					users.forEach(user=>{
 						const id64 = user.id64;
@@ -342,7 +343,7 @@ const app = new Vue({
 					app.info.users.forEach(user=>{
 						if(user.timecreated && !user.detail){
 							const { id64 } = user;
-							request('get',`${baseAPI}detail?id64=${id64}`,null,r=>{
+							request('get',`${steamBaseAPI}detail?id64=${id64}`,null,r=>{
 								for(k in r){
 									const v = r[k]
 									app.$set(user,k,v);
