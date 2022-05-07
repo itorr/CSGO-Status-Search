@@ -371,6 +371,12 @@ const app = new Vue({
 			inputEl.select();
 			document.execCommand('Copy'); 
 			inputEl.remove()
+		},
+		onImageLoadError(e){
+			const el = e.target;
+			if(/api/.test(el.src)) return;
+			
+			el.src = `${steamBaseAPI}proxy?url=${encodeURIComponent(el.src)}`;
 		}
 	},
 	watch:{
@@ -395,12 +401,6 @@ const app = new Vue({
 				localStorage.setItem(localStorageContentKey,1);
 			}
 		},
-		onImageLoadError(e){
-			const el = e.target;
-			if(/api/.test(el.src)) return;
-			
-			el.src = `${steamBaseAPI}proxy?url=${encodeURIComponent(el.src)}`;
-		}
 	},
 	computed:{
 		users(){
