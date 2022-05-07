@@ -128,7 +128,7 @@
                     <!-- <td>{{user.rate}}</td> -->
 
                     <td style="overflow: hidden;">
-                        <img :src="user.avatar">
+                        <img :src="user.avatar" @error="onImageLoadError">
                     </td>
 
                     <td>

@@ -394,6 +394,12 @@ const app = new Vue({
 			}else{
 				localStorage.setItem(localStorageContentKey,1);
 			}
+		},
+		onImageLoadError(e){
+			const el = e.target;
+			if(/api/.test(el.src)) return;
+			
+			el.src = `${steamBaseAPI}proxy?url=${encodeURIComponent(el.src)}`;
 		}
 	},
 	computed:{
