@@ -5,7 +5,9 @@ export default async function handler(req, res) {
 
 	if(!/^https:\/\/steamcdn-a\.akamaihd\.net\//.test(url)) return res.status(404);
 
-	const imageBuffer = await axios(url);
-    res.setHeader('content-type','image/jpeg');
-	res.status(200).end(imageBuffer);
+	const r = await axios(url,{
+        responseType:'arraybuffer',
+    });
+    res.setHeader('content-type','image/jpeg')
+	res.status(200).send(r.data);
 }
