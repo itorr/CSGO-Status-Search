@@ -53,15 +53,16 @@ const getUsersBySteam = async id64s => {
 		while(index--){
 			const summarie = summaries[index];
 
+			const timecreated = summarie.timecreated || null;
+
 			const id64 = summarie.steamid;
 			const user = {
 				id64,
 				personaname: summarie.personaname,
 				avatar: summarie.avatarmedium,
-				timecreated: summarie.timecreated || null,
+				timecreated,
 			};
 			Users[id64] = user;
-			bansId64s.push(id64);
 		};
 
 		if(bansId64s.length){

@@ -86,7 +86,7 @@ const request = (method,uri,data,callback,nocache)=>{
 	}).catch(error => console.error(error))
 };
 
-const baseAPI = 'https://lab.magiconch.com/api/';
+const baseAPI = 'api/';
 const requestText = (method,uri,data,callback)=>{
 	let body = null;
 	if(data){
@@ -329,22 +329,22 @@ const app = new Vue({
 			})
 
 			if(id64s.length){
-				request('get',`${baseAPI}steam/users?id64s=${id64s.join(',')}`,null,r=>{
-					const users = r.users;
-					users.forEach(user=>{
-						const id64 = user.id64;
-						if(Users[id64]){
-							for(let key in user){
-								app.$set(Users[id64],key,user[key]);
-							}
-						}
-					});
-					const getDetailUsersID64 = [];
-					app.info.users.forEach(user=>{
-						if(user.timecreated && !user.detail) getDetailUsersID64.push(user.id64);
-					});
-					if(getDetailUsersID64.length)
-					request('get',`${baseAPI}steam/users/detail?id64s=${getDetailUsersID64.join(',')}`,null,r=>{
+				// request('get',`${baseAPI}steam/users?id64s=${id64s.join(',')}`,null,r=>{
+				// 	const users = r.users;
+				// 	users.forEach(user=>{
+				// 		const id64 = user.id64;
+				// 		if(Users[id64]){
+				// 			for(let key in user){
+				// 				app.$set(Users[id64],key,user[key]);
+				// 			}
+				// 		}
+				// 	});
+				// 	const getDetailUsersID64 = [];
+				// 	app.info.users.forEach(user=>{
+				// 		if(user.timecreated && !user.detail) getDetailUsersID64.push(user.id64);
+				// 	});
+				// 	if(getDetailUsersID64.length)
+					request('get',`${baseAPI}users?id64s=${id64s}`,null,r=>{
 						const users = r.users;
 						users.forEach(user=>{
 							const id64 = user.id64;
@@ -356,7 +356,7 @@ const app = new Vue({
 						})
 						
 					},nocache);
-				},nocache);
+				// },nocache);
 			}
 
 			this.info = info
@@ -439,17 +439,17 @@ const app = new Vue({
 	}
 })
 
-request('get',`${baseAPI}steam/info`,null,(r,clearCache)=>{
-	app.user = r.user || null;
-	app.authURL = r.authURL;
-	// console.log(/123/,r,clearCache);
-	if(r.user){
-		app.refactor();
-		getLog();
-	}else{
-		clearCache();
-	}
-},nocache);
+// request('get',`${baseAPI}steam/info`,null,(r,clearCache)=>{
+// 	app.user = r.user || null;
+// 	app.authURL = r.authURL;
+// 	// console.log(/123/,r,clearCache);
+// 	if(r.user){
+// 		app.refactor();
+// 		getLog();
+// 	}else{
+// 		clearCache();
+// 	}
+// },nocache);
 
 
 window.addEventListener('paste',e=>{

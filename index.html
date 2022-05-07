@@ -3,7 +3,7 @@
 <title>CSGO 对局信息速览 - CSGO Status Search - 神奇海螺实验室</title>
 <meta name="viewport" content="width=device-width,user-scalable=0">
 <meta name="discription" content="对局用户信息速览">
-<link rel="stylesheet" href="document.css?r=1" />
+<link rel="stylesheet" href="document.css" />
 <div class="app" :data-runing="runing">
     <header>
         <h1>CSGO 对局信息速览 - CSGO Status Search</h1>
@@ -12,11 +12,11 @@
             {{user.name}}
         </div>
     </header>
-
+<!-- 
     <div class="login-box" v-if="user === null" v-cloak>
         <a :href="authURL">Steam 登录以使用</a>
     </div>
-    <template v-else  v-cloak>
+    <template v-else  v-cloak> -->
         <textarea v-model.trim="text" cols="90" rows="30" placeholder="输入 CSGO status 信息，快速查询对局用户信息"></textarea>
         <!-- <button @click="refactor">refactor</button> -->
         <!-- <input type="range" v-model.number="h" min="1" max="20" step="0.1"> {{h}} -->
@@ -229,7 +229,7 @@
     
             <!-- <pre>{{JSON.stringify($data,0,4)}}</pre> -->
         </div>
-    </template>
+    <!-- </template> -->
 
 
     <div style="padding:20px 0 0;">
@@ -333,6 +333,6 @@ c.onclick=_=>{
 	location.reload()
 };
 </script>
-<script src="https://cdn.bootcss.com/vue/2.6.11/vue.min.js"></script>
+<script src="2.6.11.min.js"></script>
 <script src="md5.min.js"></script>
-<script src="document.js?r=2"></script>
+<script src="document.js"></script>
