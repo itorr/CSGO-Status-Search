@@ -9,5 +9,5 @@ export default async function handler(req, res) {
         responseType:'arraybuffer',
     });
     res.setHeader('content-type','image/jpeg');
-	res.status(200).send(imageBuffer);
+	res.status(200).end(imageBuffer);
 }
