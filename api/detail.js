@@ -74,11 +74,11 @@ const getUserDetailCallback = async id64 =>{
 
 	user.csgo_playtime_2weeks = game.playtime_2weeks;
 	user.csgo_playtime_forever = game.playtime_forever;
-
 	
 	const level = await getUserLevel(id64);
 	
 	user.level = level;
+	return user;
 };
 //76561198374544929
 export default async function handler(req, res) {
@@ -86,7 +86,7 @@ export default async function handler(req, res) {
 
 	const id64 = query['id64'];
 	
-	if(!id64Regex.test(id64)) return res.status(200).json(null);
+	if(!id64Regex.test(id64)) return res.status(200).json({});
 
     const user = await getUserDetailCallback(id64);
 	res.status(200).json(user);
