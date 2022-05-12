@@ -403,3 +403,74 @@ input[type="checkbox"]{
 	vertical-align: middle;
 	margin-top:.1em;
 }
+
+
+
+
+@media (max-height:800px){
+	.app{
+		// margin:0;
+		// width:auto;
+		font-size:12px;
+	}
+	textarea{
+		display: none;
+	}
+	header{
+		display: none;
+	}
+	h4{
+		font-size: 14px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow:ellipsis;
+		max-width:240px;
+	}
+	.ui-table-box{
+		tr{
+			th{
+				padding:4px 0;
+				line-height: 12px;
+				white-space: nowrap;
+				br{
+					display: none;
+				}
+			}
+			th[style="width: 44px;"]{
+				width:10px !important;
+			}
+			td{
+				padding:0 4px;
+				line-height: 1.1;
+				img{
+					width: 40px;
+					margin:-3px -5px;
+				}
+			}
+		}
+	}
+	div[style="margin: -4px 0px;"]{
+		br{
+			display: none;
+		}
+		a[href^="https://csgo.ste"]{
+			display: none;
+		}
+	}
+	small{
+		font-size:12px;
+	}
+	small+small{
+		display: none !important;
+	}
+	.log-buttons-box{
+		margin:0 -4px;
+		height:auto;
+		a{
+			line-height: 17px;
+			padding:0;
+		}
+	}
+	.ui-tag{padding:2px 3px;
+	}
+}

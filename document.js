@@ -479,6 +479,6 @@ const loadScript = (src,cb=_=>{},el) =>{
 };
 
 setTimeout(_=>{
-	('//hm.baidu.com/hm.js?f4e477c61adf5c145ce938a05611d5f0');
+	loadScript('//hm.baidu.com/hm.js?f4e477c61adf5c145ce938a05611d5f0');
 	loadScript('//www.googletagmanager.com/gtag/js?id=G-13BQC1VDD8');
 },400);

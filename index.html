@@ -3,233 +3,221 @@
 <title>CSGO 对局信息速览 - CSGO Status Search - 神奇海螺实验室</title>
 <meta name="viewport" content="width=device-width,user-scalable=0">
 <meta name="discription" content="对局用户信息速览">
-<link rel="stylesheet" href="document.css" />
+<link rel="stylesheet" href="document.css?r=8" />
 <div class="app" :data-runing="runing" v-cloak>
     <header>
         <h1>CSGO 对局信息速览 - CSGO Status Search</h1>
-        <div class="user-box" v-if="user" v-cloak>
-            <img :src="user.avatar">
-            {{user.name}}
-        </div>
     </header>
-<!-- 
-    <div class="login-box" v-if="user === null" v-cloak>
-        <a :href="authURL">Steam 登录以使用</a>
-    </div>
-    <template v-else  > -->
-        <textarea v-model.trim="text" cols="90" rows="30" placeholder="输入 CSGO status 信息，快速查询对局用户信息"></textarea>
-        <!-- <button @click="refactor">refactor</button> -->
-        <!-- <input type="range" v-model.number="h" min="1" max="20" step="0.1"> {{h}} -->
 
-        <div class="info-box" v-if="info">
-            <div v-if="hackers.length" style="padding:10px 10px 5px;">
-                <label>
-                    <input type="checkbox" v-model="callvoteKick">
-                    尝试投票踢出
-                </label>
-                <!-- <label>
-                    <input type="checkbox" v-model="disconnect">
-                    退出当前对局
-                </label> -->
-                <p>
-                    <button @click="copy($refs['sayFuckingHacker'].innerText)">复制</button>
-                    <span ref="sayFuckingHacker">
-                        say
-                        "<span>{{hackers.map(hacker=>`${hacker.name} ( ${hacker.id32} )`).join(', ').replace(/["']/g,'')}}</span> is Noob Hacker, fucking Reported"
-                        <span v-if="callvoteKick" v-for="hacker in hackers">;callvote kick {{hacker.userId}}</span>
-                        <span v-if="disconnect">;disconnect <span style="opacity:0;">您已被 VAC 封禁 w(ﾟДﾟ)w</span></span>
-                    </span>
-                </p>
-                <p>
-                    <button @click="copy($refs['sayFuckingHackerZH'].innerText)">复制</button>
-                    <span ref="sayFuckingHackerZH">
-                        say
-                        "<span>{{hackers.map(hacker=>`${hacker.name} ( ${hacker.id32} )`).join('、').replace(/["']/g,'')}}</span> 是个臭作弊狗，麻烦大家举报一下"
-                        <span v-if="callvoteKick" v-for="hacker in hackers">;callvote kick {{hacker.userId}}</span>
-                        <span v-if="disconnect">;disconnect <span style="opacity:0;">您已被 VAC 封禁 w(ﾟДﾟ)w</span></span>
-                    </span>
-                </p>
-            </div>
-            <table class="ui-table-box users-box">
-                <tr>
-                    <th class="sort-th" 
-                        :class="{active:sortKey === 'userId'}" 
-                        @click.prevent="sortBy('userId',-sortType)" style="width:1em">u</th>
-                    <th class="sort-th" 
-                        :class="{active:sortKey === 'id'}" 
-                        @click.prevent="sortBy('id',-sortType)" style="width:1em">id</th>
-                    <th class="sort-th" 
-                        :class="{active:sortKey === 'ping'}" 
-                        @click.prevent="sortBy('ping',-sortType)">ping<br>loss</th>
-                    <th class="sort-th" 
-                        :class="{active:sortKey === 'name'}" 
-                        @click.prevent="sortBy('name',-sortType)">
-                        name
-                        <br>
-                        id32 / id64
-                    </th>
-                    <!-- <th>state</th> -->
-                    <!-- <th>连接</th> -->
-                    <!-- <th title="rate">包速率</th> -->
-                    
-                    <th style="width:44px">头像</th>
-                    <th style="width:82px" class="sort-th" 
-                        :class="{active:sortKey === 'timecreated'}" 
-                        @click.prevent="sortBy('timecreated',-sortType)">
-                        Steam
-                        <br>
-                        注册时间
-                    </th>
-                    <th style="width:38px" class="sort-th" 
-                        :class="{active:sortKey === 'level'}" 
-                        @click.prevent="sortBy('level',-sortType)">
-                        社区
-                        <br>  
-                        等级
-                    </th>
-                    <th style="width:46px" class="sort-th" 
-                        :class="{active:sortKey === 'csgo_playtime_2weeks'}" 
-                        @click.prevent="sortBy('csgo_playtime_2weeks',-sortType)">2周<br>总时</th>
-                    <!-- <th>资料</th> -->
-
-                    <th>封禁</th>
-
-
-                    <th style="width:86px" class="sort-th" 
-                    :class="{active:sortKey === 'logUnix'}" 
-                    @click.prevent="sortBy('logUnix',-sortType)">标记时间</th>
-                    <th style="width:60px">标记</th>
-                    <th style="width:36px"></th>
-                </tr>
-                <tr v-for="user in users" 
-                    :key="user.id64"
-                    :data-bot="user.bot" 
-                    :data-log="Logs[user.id64]&&Logs[user.id64].color">
-                    <td class="ui-copy" @click="copy(`callvote kick ${user.userId}`)">{{user.userId}}</td>
-                    <td>{{user.id}}</td>
-                    <td>
-                        <span>{{user.ping}}</span>
-                        <small v-if="!!+user.loss" data-red style="display: block;">{{user.loss}}</small>
-                    </td>
-                    <td>
-                        <h4>
-                            <b>{{user.personaname || user.name}}</b>
-                            <span 
-                                v-if="user.personaname && user.name !== user.personaname.replace(/~/g,'?')"
-                                style="color:red;font-weight: normal;"
-                                >{{user.name}}</span>
-                        </h4>
-                        <small style="display: block;">{{user.id32}}</small>
-                        <small style="display: block;">{{user.id64}}</small>
-                        <small style="display: block;" v-if="user.bot">BOT</small>
-                    </td>
-                    <!-- <td>{{user.state}}</td> -->
-                    <!-- <td>{{user.connected}}</td> -->
-                    <!-- <td>{{user.rate}}</td> -->
-
-                    <td style="overflow: hidden;">
-                        <img :src="user.avatar" @error="onImageLoadError">
-                    </td>
-
-                    <td>
-                        <span v-if="user.timecreated">
-                            <time>{{dateFormat(user.timecreated)}}</time>
-                            <br>
-                            <small><time>{{dateFormat(user.timecreated,'hh:mm')}}</time></small>
-                            <small>{{Math.floor((new Date()/1000 - user.timecreated)/3600/24/356)}}年</small>
-                        </span>
-                        <span v-else-if="user.timecreated === undefined"></span>
-                        <span v-else class="ui-tag red nowarp">
-                            资料未公开
-                        </span>
-                    </td>
-
-                    <td>
-                        <span class="ui-tag nowarp" 
-                            v-if="user.level !== undefined && user.level < 5" 
-                            :style="{background:`hsl(${user.level*h},${100 - user.level}%,${60 - user.level/3}%)`,color:'#FFF'}">
-                            <small>Lv</small><b>{{user.level}}</b>
-                        </span>
-                        <span class="ui-tag nowarp" 
-                            v-else-if="user.level !== undefined" >
-                            <small>Lv</small><b>{{user.level}}</b>
-                        </span>
-                    </td>
-                    <!-- <td>{{user.rep.privacystate}}</td> -->
-
-                    <td>
-                        <span v-if="user.csgo_playtime_2weeks && user.csgo_playtime_forever">
-                            <span><b>{{Math.floor(user.csgo_playtime_2weeks/60)}}</b>h</span>
-                            <br>
-                            <small>{{Math.floor(user.csgo_playtime_forever/60)}}h</small>
-                        </span>
-                    </td>
-
-                    <td>
-                        <template v-if="user.bans">
-                            <span class="ui-tag red nowarp" v-if="user.bans.CommunityBanned">社区封禁</span>
-                            <span class="ui-tag red nowarp" v-if="user.bans.VACBanned">VAC封禁</span>
-                            <span class="ui-tag red nowarp" v-if="user.bans.NumberOfGameBans">
-                                游戏封禁
-                                <b>{{user.bans.NumberOfGameBans}}</b>
-                            </span>
-                            <span class="ui-tag red nowarp" v-if="user.bans.NumberOfVACBans">
-                                VAC封禁
-                                <b>{{user.bans.NumberOfVACBans}}</b>
-                            </span>
-                            <span class="ui-tag red nowarp" v-if="user.bans.EconomyBan">交易封禁{{user.bans.EconomyBan}}</span>
-                        </template>
-                    </td>
-
-                    <td>
-                        <span v-if="Logs[user.id64]">
-                            <time>{{dateFormat(Logs[user.id64].unix)}}</time>
-                            <br>
-                            <small><time>{{dateFormat(Logs[user.id64].unix,'hh:mm')}}</time></small>
-                        </span>
-                    </td>
-
-                    <td>
-                        <div class="log-buttons-box">
-                            <a class="ui-line-button red" @click="log(user.id64,'red')">红</a>
-                            <a class="ui-line-button green" @click="log(user.id64,'green')">绿</a>
-                            <a class="ui-line-button" @click="log(user.id64,null)">无</a>
-                            <a class="ui-line-button orange" @click="log(user.id64,'orange')">黄</a>
-                        </div>
-                    </td>
-                    <td>
-                        <div v-if="user.id64" style="margin:-4px 0">
-                            <a :href="`https://steamcommunity.com/profiles/${user.id64}`" target="_blank">社区</a>
-                            <br>
-                            <!-- <a :href="`https://steamrep.com/search?q=${user.id64}`" target="_blank">rep</a> -->
-                            
-                            <a :href="`https://csgo.steamanalyst.com/users/${user.id64}`" target="_blank">Ana</a>
-                            <br>
-                            <a :href="`https://csgostats.gg/player/${user.id64}`" target="_blank">stats</a>
-                        </div>
-                    </td>
-                </tr>
-            </table>
-        </div>
-        <div style="padding:20px 0 0;">
-            <label>
-                <input type="checkbox" v-model="debug">
-                高级选项
-            </label>
-        </div>
-        <div class="debug-box" v-if="debug">
-            <div class="post-box">
-                <h3>标记库</h3>
-                <p>独立的记录库名称，可以自己起名新建共享给其他人</p>
-                <input class="ui-input" v-model.lazy.trim="logName" placeholder="记录库名称"> [a-Z0-9_] 英文数字下划线
-            </div>
-            <div class="post-box">
-                <button @click="clear()">清空全部缓存</button>
-            </div>
     
-            <!-- <pre>{{JSON.stringify($data,0,4)}}</pre> -->
+    <textarea v-model.trim="text" cols="90" rows="30" placeholder="输入 CSGO status 信息，快速查询对局用户信息"></textarea>
+    <!-- <button @click="refactor">refactor</button> -->
+    <!-- <input type="range" v-model.number="h" min="1" max="20" step="0.1"> {{h}} -->
+
+    <div class="info-box" v-if="info">
+        <div v-if="hackers.length" style="padding:10px 10px 5px;">
+            <label>
+                <input type="checkbox" v-model="callvoteKick">
+                尝试投票踢出
+            </label>
+            <!-- <label>
+                <input type="checkbox" v-model="disconnect">
+                退出当前对局
+            </label> -->
+            <p>
+                <button @click="copy($refs['sayFuckingHacker'].innerText)">复制</button>
+                <span ref="sayFuckingHacker">
+                    say
+                    "<span>{{hackers.map(hacker=>`${hacker.name} ( ${hacker.id32} )`).join(', ').replace(/["']/g,'')}}</span> is Noob Hacker, fucking Reported"
+                    <span v-if="callvoteKick" v-for="hacker in hackers">;callvote kick {{hacker.userId}}</span>
+                    <span v-if="disconnect">;disconnect <span style="opacity:0;">您已被 VAC 封禁 w(ﾟДﾟ)w</span></span>
+                </span>
+            </p>
+            <p>
+                <button @click="copy($refs['sayFuckingHackerZH'].innerText)">复制</button>
+                <span ref="sayFuckingHackerZH">
+                    say
+                    "<span>{{hackers.map(hacker=>`${hacker.name} ( ${hacker.id32} )`).join('、').replace(/["']/g,'')}}</span> 是个臭作弊狗，麻烦大家举报一下"
+                    <span v-if="callvoteKick" v-for="hacker in hackers">;callvote kick {{hacker.userId}}</span>
+                    <span v-if="disconnect">;disconnect <span style="opacity:0;">您已被 VAC 封禁 w(ﾟДﾟ)w</span></span>
+                </span>
+            </p>
         </div>
-    <!-- </template> -->
+        <table class="ui-table-box users-box">
+            <tr>
+                <th class="sort-th" 
+                    :class="{active:sortKey === 'userId'}" 
+                    @click.prevent="sortBy('userId',-sortType)" style="width:1em">u</th>
+                <th class="sort-th" 
+                    :class="{active:sortKey === 'id'}" 
+                    @click.prevent="sortBy('id',-sortType)" style="width:1em">id</th>
+                <th class="sort-th" 
+                    :class="{active:sortKey === 'ping'}" 
+                    @click.prevent="sortBy('ping',-sortType)" style="width:1.5em">延迟</th>
+                <th class="sort-th" 
+                    :class="{active:sortKey === 'name'}" 
+                    @click.prevent="sortBy('name',-sortType)">
+                    name
+                    <br>
+                    id32 / id64
+                </th>
+                <!-- <th>state</th> -->
+                <!-- <th>连接</th> -->
+                <!-- <th title="rate">包速率</th> -->
+                
+                <th style="width:44px"></th>
+                <th style="width:82px" class="sort-th" 
+                    :class="{active:sortKey === 'timecreated'}" 
+                    @click.prevent="sortBy('timecreated',-sortType)">
+                    注册时间
+                </th>
+                <th style="width:38px" class="sort-th" 
+                    :class="{active:sortKey === 'level'}" 
+                    @click.prevent="sortBy('level',-sortType)">
+                    等级
+                </th>
+                <th style="width:46px" class="sort-th" 
+                    :class="{active:sortKey === 'csgo_playtime_2weeks'}" 
+                    @click.prevent="sortBy('csgo_playtime_2weeks',-sortType)">总时</th>
+                <!-- <th>资料</th> -->
+
+                <th>封禁</th>
+
+
+                <th style="width:86px" class="sort-th" 
+                :class="{active:sortKey === 'logUnix'}" 
+                @click.prevent="sortBy('logUnix',-sortType)">标记时间</th>
+                <th style="width:60px">标记</th>
+                <th style="width:36px"></th>
+            </tr>
+            <tr v-for="user in users" 
+                :key="user.id64"
+                :data-bot="user.bot" 
+                :data-log="Logs[user.id64]&&Logs[user.id64].color">
+                <td class="ui-copy" @click="copy(`callvote kick ${user.userId}`)">{{user.userId}}</td>
+                <td>{{user.id}}</td>
+                <td>
+                    <span>{{user.ping}}</span>
+                    <small v-if="!!+user.loss" data-red style="display: block;">{{user.loss}}</small>
+                </td>
+                <td>
+                    <h4>
+                        <b>{{user.personaname || user.name}}</b>
+                        <span 
+                            v-if="user.personaname && user.name !== user.personaname.replace(/~/g,'?')"
+                            style="color:red;font-weight: normal;"
+                            >{{user.name}}</span>
+                    </h4>
+                    <small style="display: block;">{{user.id32}}</small>
+                    <small style="display: block;">{{user.id64}}</small>
+                    <small style="display: block;" v-if="user.bot">BOT</small>
+                </td>
+                <!-- <td>{{user.state}}</td> -->
+                <!-- <td>{{user.connected}}</td> -->
+                <!-- <td>{{user.rate}}</td> -->
+
+                <td style="overflow: hidden;">
+                    <img :src="user.avatar">
+                </td>
+
+                <td>
+                    <span v-if="user.timecreated">
+                        <time>{{dateFormat(user.timecreated)}}</time>
+                        <br>
+                        <small><time>{{dateFormat(user.timecreated,'hh:mm')}}</time></small>
+                        <small>{{Math.floor((new Date()/1000 - user.timecreated)/3600/24/356)}}年</small>
+                    </span>
+                    <span v-else-if="user.timecreated === undefined"></span>
+                    <span v-else class="ui-tag red nowarp">
+                        资料未公开
+                    </span>
+                </td>
+
+                <td>
+                    <span class="ui-tag nowarp" 
+                        v-if="user.level !== undefined && user.level < 5" 
+                        :style="{background:`hsl(${user.level*h},${100 - user.level}%,${60 - user.level/3}%)`,color:'#FFF'}">
+                        <small>Lv</small><b>{{user.level}}</b>
+                    </span>
+                    <span class="ui-tag nowarp" 
+                        v-else-if="user.level !== undefined" >
+                        <small>Lv</small><b>{{user.level}}</b>
+                    </span>
+                </td>
+                <!-- <td>{{user.rep.privacystate}}</td> -->
+
+                <td>
+                    <span v-if="user.csgo_playtime_2weeks && user.csgo_playtime_forever">
+                        <span><b>{{Math.floor(user.csgo_playtime_2weeks/60)}}</b>h</span>
+                        <br>
+                        <small>{{Math.floor(user.csgo_playtime_forever/60)}}h</small>
+                    </span>
+                </td>
+
+                <td>
+                    <template v-if="user.bans">
+                        <span class="ui-tag red nowarp" v-if="user.bans.CommunityBanned">社区封禁</span>
+                        <span class="ui-tag red nowarp" v-if="user.bans.VACBanned">VAC封禁</span>
+                        <span class="ui-tag red nowarp" v-if="user.bans.NumberOfGameBans">
+                            游戏封禁
+                            <b>{{user.bans.NumberOfGameBans}}</b>
+                        </span>
+                        <span class="ui-tag red nowarp" v-if="user.bans.NumberOfVACBans">
+                            VAC封禁
+                            <b>{{user.bans.NumberOfVACBans}}</b>
+                        </span>
+                        <span class="ui-tag red nowarp" v-if="user.bans.EconomyBan">交易封禁{{user.bans.EconomyBan}}</span>
+                    </template>
+                </td>
+
+                <td>
+                    <span v-if="Logs[user.id64]">
+                        <time>{{dateFormat(Logs[user.id64].unix)}}</time>
+                        <br>
+                        <small><time>{{dateFormat(Logs[user.id64].unix,'hh:mm')}}</time></small>
+                    </span>
+                </td>
+
+                <td>
+                    <div class="log-buttons-box">
+                        <a class="ui-line-button red" @click="log(user.id64,'red')">红</a>
+                        <a class="ui-line-button green" @click="log(user.id64,'green')">绿</a>
+                        <a class="ui-line-button" @click="log(user.id64,null)">无</a>
+                        <a class="ui-line-button orange" @click="log(user.id64,'orange')">黄</a>
+                    </div>
+                </td>
+                <td>
+                    <div v-if="user.id64" style="margin:-4px 0">
+                        <a :href="`https://steamcommunity.com/profiles/${user.id64}`" target="_blank">社区</a>
+                        <br>
+                        <!-- <a :href="`https://steamrep.com/search?q=${user.id64}`" target="_blank">rep</a> -->
+                        
+                        <a :href="`https://csgo.steamanalyst.com/users/${user.id64}`" target="_blank">Ana</a>
+                        <br>
+                        <a :href="`https://csgostats.gg/player/${user.id64}`" target="_blank">stats</a>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div style="padding:20px 0 0;">
+        <label>
+            <input type="checkbox" v-model="debug">
+            高级选项
+        </label>
+    </div>
+    <div class="debug-box" v-if="debug">
+        <div class="post-box">
+            <h3>标记库</h3>
+            <p>独立的记录库名称，可以自己起名新建共享给其他人</p>
+            <input class="ui-input" v-model.lazy.trim="logName" placeholder="记录库名称"> [a-Z0-9_] 英文数字下划线
+        </div>
+        <div class="post-box">
+            <button @click="clear()">清空全部缓存</button>
+        </div>
+
+        <!-- <pre>{{JSON.stringify($data,0,4)}}</pre> -->
+    </div>
 
 
     <div style="padding:20px 0 0;">
@@ -333,6 +321,6 @@ c.onclick=_=>{
 	location.reload()
 };
 </script>
-<script src="vue.2.6.11.min.js"></script>
+<script src="/vue.2.6.11.min.js"></script>
 <script src="md5.min.js"></script>
-<script src="document.js"></script>
+<script src="document.js?r=2"></script>
