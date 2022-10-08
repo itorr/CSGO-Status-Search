@@ -156,6 +156,7 @@ const data = {
 	content:!localStorage.getItem(localStorageContentKey),
 	callvoteKick:false,
 	disconnect:false,
+	tip:'',
 };
 
 const getLog = ()=>{
@@ -437,6 +438,9 @@ const app = new Vue({
 			return this.users.filter(user=>this.Logs[user.id64] && this.Logs[user.id64].color==='red')
 		}
 	}
+})
+setInterval(_=>{
+	app.tip =[_=>['Blacksite', 'Vineyard', 'Sirroco','Ember'][Math.floor(_)], _=>(1-_%1)*180].map(i=>i(Date.now() / (1e3*3*60) % 4));
 })
 
 // request('get',`${baseAPI}steam/info`,null,(r,clearCache)=>{
