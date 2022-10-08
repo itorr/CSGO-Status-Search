@@ -440,7 +440,13 @@ const app = new Vue({
 	}
 })
 setInterval(_=>{
-	app.tip =[_=>['Blacksite', 'Vineyard', 'Sirroco','Ember'][Math.floor(_)], _=>Math.floor((1-_%1)*180)].map(i=>i(Date.now() / (1e3*3*60) % 4)).join(' - ');
+	app.tip = [
+		_=>['Blacksite', 'Vineyard', 'Sirroco','Ember'][Math.floor(_)], 
+		_=>{
+			const s = Math.floor((1-_%1)*180);
+			return s < 60 ? s : Math.floor(s/60) +':' + s % 60
+		}
+	].map(i=>i(Date.now() / (1e3*3*60) % 4)).join(' - ');
 },1000)
 
 // request('get',`${baseAPI}steam/info`,null,(r,clearCache)=>{
