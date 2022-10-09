@@ -439,12 +439,15 @@ const app = new Vue({
 		}
 	}
 })
+function padLeft(p,n=2) {
+	return new Array(n - (p + '').length + 1).join('0') + p;
+}
 setInterval(_=>{
 	app.tip = [
 		_=>['Blacksite', 'Vineyard', 'Sirroco','Ember'][Math.floor(_)], 
 		_=>{
 			const s = Math.floor((1-_%1)*180);
-			return s < 60 ? s : Math.floor(s/60) +':' + s % 60
+			return padLeft(Math.floor(s/60)) +':' + padLeft(s % 60)
 		}
 	].map(i=>i(Date.now() / (1e3*3*60) % 4)).join(' - ');
 },1000)
